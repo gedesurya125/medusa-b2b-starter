@@ -20,13 +20,31 @@ export const POST = async (
   res.json({ brand: result });
 };
 
+// export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
+//   const query = req.scope.resolve("query");
+
+//   const { data: brands } = await query.graph({
+//     entity: "brand",
+//     fields: ["*", "products.*"], // the first item is the property we want to retrieve,and the second one is a relation or linked model's name. the suffix .* means retrieve all properties
+//   });
+
+//   res.json({ brands });
+// };
+
+// ? Add Custom Field: Step 14: expand the GET route, to support pagination
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const query = req.scope.resolve("query");
 
-  const { data: brands } = await query.graph({
-    entity: "brand",
-    fields: ["*", "products.*"], // the first item is the property we want to retrieve,and the second one is a relation or linked model's name. the suffix .* means retrieve all properties
-  });
+  const { data: brands, metadata: { count, take, skip } = {} } =
+    await query.graph({
+      entity: "brand",
+      ...req.queryConfig, // this property hold for the pagination
+    });
 
-  res.json({ brands });
+  res.json({
+    brands,
+    count,
+    limit: take,
+    offset: skip,
+  });
 };

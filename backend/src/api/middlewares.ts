@@ -7,9 +7,15 @@ import { defineMiddlewares } from "@medusajs/medusa";
 import { adminMiddlewares } from "./admin/middlewares";
 import { storeMiddlewares } from "./store/middlewares";
 
-import { validateAndTransformBody } from "@medusajs/framework/http";
+import {
+  validateAndTransformBody,
+  validateAndTransformQuery,
+} from "@medusajs/framework/http";
 import { PostAdminCreateBrand } from "./admin/brands/validators";
 import { z } from "zod";
+import { createFindParams } from "@medusajs/medusa/api/utils/validators";
+
+export const GetBrandsSchema = createFindParams();
 
 export default defineMiddlewares({
   routes: [
@@ -39,6 +45,18 @@ export default defineMiddlewares({
       additionalDataValidator: {
         brand_id: z.string().optional(),
       },
+    },
+
+    // ? Add Custom Field: Step 15: Add default query Configuration https://docs.medusajs.com/learn/customization/customize-admin/route#2-add-default-query-configurations
+    {
+      matcher: "/admin/brands",
+      method: "GET",
+      middlewares: [
+        validateAndTransformQuery(GetBrandsSchema, {
+          defaults: ["id", "name", "products.*"],
+          isList: true,
+        }),
+      ],
     },
   ],
 });
