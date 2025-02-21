@@ -1,4 +1,4 @@
-// ? Add Custom Field: Step1: Creating custom field in medusa
+// ? Add Custom Field: Step 1: Creating custom field in medusa
 import { model } from "@medusajs/framework/utils";
 
 // ? This create a new table using DML language and the object below is defined the model columns, relations, and indexes
