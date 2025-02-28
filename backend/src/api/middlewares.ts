@@ -45,6 +45,7 @@ export default defineMiddlewares({
       method: "POST",
       additionalDataValidator: {
         brand_id: z.string().optional(),
+        bc_product_info_id: z.string().optional(),
       },
     },
 
@@ -53,6 +54,7 @@ export default defineMiddlewares({
       method: "POST",
       additionalDataValidator: {
         brand_id: z.string().optional(),
+        bc_product_info_id: z.string().optional(),
       },
     },
 
