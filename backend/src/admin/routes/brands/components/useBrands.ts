@@ -7,7 +7,7 @@ type Brand = {
   id: string;
   name: string;
 };
-type BrandsResponse = {
+export type BrandsResponse = {
   brands: Brand[];
   count: number;
   limit: number;

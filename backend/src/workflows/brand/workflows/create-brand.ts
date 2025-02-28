@@ -1,4 +1,4 @@
-// ? Add Custom Field: Step7: source: https://docs.medusajs.com/learn/customization/custom-features/workflow#1-create-createbrandstep
+// ? Add Custom Field: Step 7: source: https://docs.medusajs.com/learn/customization/custom-features/workflow#1-create-createbrandstep
 // ?
 import {
   createStep,
@@ -11,6 +11,7 @@ import BrandModuleService from "../../../modules/brand/service";
 
 export type CreateBrandStepInput = {
   name: string;
+  documentUrl?: string | null;
 };
 
 export const createBrandStep = createStep(
@@ -50,9 +51,10 @@ export const createBrandStep = createStep(
   }
 );
 
-// ? Add Custom Field: Step8: Create the brand workflow https://docs.medusajs.com/learn/customization/custom-features/workflow#2-create-createbrandworkflow
+// ? Add Custom Field: Step 8: Create the brand workflow https://docs.medusajs.com/learn/customization/custom-features/workflow#2-create-createbrandworkflow
 type CreateBrandWorkflowInput = {
   name: string;
+  documentUrl?: string | null;
 };
 
 // ? MAIN MODULE

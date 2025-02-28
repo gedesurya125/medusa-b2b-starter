@@ -1,4 +1,4 @@
-//? Add Custom Field: Step3: Create custom field
+//? Add Custom Field: Step 3: Create custom field
 //? This file tell medusa the name of the module and its main service
 import { Module } from "@medusajs/framework/utils";
 import BrandModuleService from "./service";

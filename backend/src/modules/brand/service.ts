@@ -1,4 +1,4 @@
-// ? Add Custom Field: Step2 :
+// ? Add Custom Field: Step 2:
 //? This service provide methods to manage the  Brand data model
 
 import { MedusaService } from "@medusajs/framework/utils";

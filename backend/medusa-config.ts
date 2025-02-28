@@ -33,9 +33,9 @@ module.exports = defineConfig({
     [Modules.WORKFLOW_ENGINE]: {
       resolve: "@medusajs/medusa/workflow-engine-inmemory",
     },
-    // ? Add Custom Field: Step4: Add the module to the medusa configuration,
-    // ? Add Custom Field: Step5: Then run command `npx medusa db:generate brand` to generate the migration
-    // ? Add Custom Field: Step6: Then run command  `npx medusa db:migrate` to run all migration that haven't run yet in the medusa application
+    // ? Add Custom Field: Step 4: Add the module to the medusa configuration,
+    // ? Add Custom Field: Step 5: Then run command `npx medusa db:generate brand` to generate the migration
+    // ? Add Custom Field: Step 6: Then run command  `npx medusa db:migrate` to run all migration that haven't run yet in the medusa application
     [BRAND_MODULE]: {
       resolve: "./modules/brand",
     },

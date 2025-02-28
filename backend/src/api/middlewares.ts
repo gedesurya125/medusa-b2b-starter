@@ -31,7 +31,7 @@ export default defineMiddlewares({
         },
       ],
     },
-    // ? Add Custom Field: Step9: Add middleware to validate the request body before hit the api of /admin/brand
+    // ? Add Custom Field: Step 9: Add middleware to validate the request body before hit the api of /admin/brand
     {
       matcher: "/admin/brands",
       method: "POST",
@@ -41,9 +41,19 @@ export default defineMiddlewares({
     // ? Add Custom Field: Step 12 : add data validation to the /admin/products route. source: https://docs.medusajs.com/learn/customization/extend-features/extend-create-product#2-configure-additional-data-validation
     {
       matcher: "/admin/products",
-      method: ["POST"],
+      method: "POST",
       additionalDataValidator: {
         brand_id: z.string().optional(),
+        documentUrl: z.string().optional(),
+      },
+    },
+
+    {
+      matcher: "/admin/products/:id",
+      method: "POST",
+      additionalDataValidator: {
+        brand_id: z.string().optional(),
+        documentUrl: z.string().optional(),
       },
     },
 

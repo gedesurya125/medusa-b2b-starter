@@ -1,3 +1,4 @@
+// TODO: update this function file name to be product-created
 // ? Add Custom Field: Step 11: Extend the create product flow
 import { createProductsWorkflow } from "@medusajs/medusa/core-flows";
 import { StepResponse } from "@medusajs/framework/workflows-sdk";

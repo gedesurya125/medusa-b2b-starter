@@ -8,5 +8,6 @@ export const Brand = model.define(
     //? this object is the data model's schema
     id: model.id().primaryKey(),
     name: model.text(),
+    documentUrl: model.text().nullable(),
   }
 );

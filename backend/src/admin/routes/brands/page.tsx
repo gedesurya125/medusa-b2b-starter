@@ -1,4 +1,4 @@
-// ? Add Custom Field: Step 15: Add the Brands page to show the paginated brands
+// ? Add Custom Field: Step 14: Add the Brands page to show the paginated brands
 
 import { defineRouteConfig } from "@medusajs/admin-sdk";
 import { TagSolid } from "@medusajs/icons";
