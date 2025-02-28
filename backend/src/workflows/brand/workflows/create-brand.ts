@@ -11,7 +11,6 @@ import BrandModuleService from "../../../modules/brand/service";
 
 export type CreateBrandStepInput = {
   name: string;
-  documentUrl?: string | null;
 };
 
 export const createBrandStep = createStep(
@@ -54,7 +53,6 @@ export const createBrandStep = createStep(
 // ? Add Custom Field: Step 8: Create the brand workflow https://docs.medusajs.com/learn/customization/custom-features/workflow#2-create-createbrandworkflow
 type CreateBrandWorkflowInput = {
   name: string;
-  documentUrl?: string | null;
 };
 
 // ? MAIN MODULE

@@ -1,6 +1,5 @@
-import { LinkProductProductBrandBrand } from ".medusa/types/query-entry-points";
 import { LinkDefinition } from "@medusajs/framework/types";
-import { Module, Modules } from "@medusajs/framework/utils";
+import { Modules } from "@medusajs/framework/utils";
 import { StepResponse } from "@medusajs/framework/workflows-sdk";
 import { updateProductsWorkflow } from "@medusajs/medusa/core-flows";
 import { BRAND_MODULE } from "src/modules/brand";
@@ -11,6 +10,10 @@ updateProductsWorkflow.hooks.productsUpdated(
     if (!additional_data?.brand_id) {
       return new StepResponse([], []);
     }
+
+    const productModuleService = container.resolve(Modules.PRODUCT);
+
+    const query = container.resolve("query");
 
     const brandModuleService: BrandModuleService =
       container.resolve(BRAND_MODULE);
@@ -25,19 +28,64 @@ updateProductsWorkflow.hooks.productsUpdated(
     const links: LinkDefinition[] = [];
 
     for (const product of products) {
-      // ? remove old linked brand or brands
+      // ?query source https://docs.medusajs.com/learn/fundamentals/module-links/query#apply-filters
+      const productDetail = await query
+        .graph({
+          entity: "product",
+          filters: {
+            id: product.id,
+          },
+          fields: ["*", "brand.*"],
+        })
+        .then((res) => res.data[0]);
 
-      // Get brand linked to for the product
+      console.log("this is the product detail", productDetail);
 
-      // link.dismiss({
-      //   [Modules.PRODUCT]: {
-      //     product_id: product.id,
-      //   },
-      //   [BRAND_MODULE]: {
-      //     brand_id: "*",
-      //   },
-      // });
+      // Check if the brand_id is not changed
+      if (productDetail?.brand?.id === additional_data.brand_id) {
+        console.log(
+          `Product ${product.title} already linked to brand ${additional_data.brand_id}`
+        );
+        return;
+      } else {
+        const dismissSingleModuleLinkedToProduct = async ({
+          productId,
+          brandId,
+        }: {
+          productId: string;
+          brandId: string;
+        }) => {
+          await link.dismiss({
+            [Modules.PRODUCT]: {
+              product_id: productId,
+            },
+            [BRAND_MODULE]: {
+              brand_id: brandId,
+            },
+          });
+        };
 
+        if (productDetail?.brand && Array.isArray(productDetail?.brand)) {
+          await Promise.all(
+            // ? the brand can be multiple, probably this is bug from medusa so we map it here
+            //@ts-ignore
+            productDetail?.brand?.map(
+              async (brandItem) =>
+                await dismissSingleModuleLinkedToProduct({
+                  productId: product.id,
+                  brandId: brandItem.id,
+                })
+            )
+          );
+        } else if (productDetail?.brand) {
+          await dismissSingleModuleLinkedToProduct({
+            productId: product.id,
+            brandId: productDetail?.brand?.id,
+          });
+        }
+      }
+
+      // ? Link to another product
       links.push({
         [Modules.PRODUCT]: {
           product_id: product.id,

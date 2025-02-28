@@ -3,5 +3,4 @@ import { z } from "zod";
 
 export const PostAdminCreateBrand = z.object({
   name: z.string(),
-  documentUrl: z.string().nullish().optional().nullable(),
 });
