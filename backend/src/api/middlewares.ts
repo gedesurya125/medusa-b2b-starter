@@ -31,6 +31,7 @@ export default defineMiddlewares({
         },
       ],
     },
+    // TODO: clean up middlewares below, by moving it into it's respective folder
     // ? Add Custom Field: Step 9: Add middleware to validate the request body before hit the api of /admin/brand
     {
       matcher: "/admin/brands",

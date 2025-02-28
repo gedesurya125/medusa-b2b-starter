@@ -3,6 +3,7 @@ import { APPROVAL_MODULE } from "./src/modules/approval";
 import { COMPANY_MODULE } from "./src/modules/company";
 import { loadEnv, defineConfig, Modules } from "@medusajs/framework/utils";
 import { BRAND_MODULE } from "./src/modules/brand";
+import { BC_PRODUCT_INFO_MODULE } from "src/modules/bcProductInfo";
 
 loadEnv(process.env.NODE_ENV!, process.cwd());
 
@@ -38,6 +39,9 @@ module.exports = defineConfig({
     // ? Add Custom Field: Step 6: Then run command  `npx medusa db:migrate` to run all migration that haven't run yet in the medusa application
     [BRAND_MODULE]: {
       resolve: "./modules/brand",
+    },
+    [BC_PRODUCT_INFO_MODULE]: {
+      resolve: "./src/modules/bcProductInfo",
     },
   },
 });
