@@ -12,10 +12,14 @@ import {
 } from "../routes/brands/components/useBrands";
 import { useState } from "react";
 
-type AdminProductBrand = AdminProduct & {
+type AdminProductBrandWithBcProductInfo = AdminProduct & {
   brand?: {
     id: string;
     name: string;
+  };
+  bc_product_info: {
+    id: string;
+    bc_product_id: string;
   };
 };
 
@@ -25,17 +29,21 @@ const ProductBrandWidget = ({
   const { data: queryResult } = useQuery({
     queryFn: () =>
       sdk.admin.product.retrieve(product.id, {
-        fields: "+brand.*",
+        fields: "+bc_product_info.*,+brand.*",
       }),
     queryKey: [["product", product.id]],
   });
-  const brandName = (queryResult?.product as AdminProductBrand)?.brand?.name;
+  const brandName = (queryResult?.product as AdminProductBrandWithBcProductInfo)
+    ?.brand?.name;
+  const bcProductId = (
+    queryResult?.product as AdminProductBrandWithBcProductInfo
+  )?.bc_product_info?.bc_product_id;
 
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
         <div>
-          <Heading level="h2">Brand</Heading>
+          <Heading level="h2">Custom Fields</Heading>
         </div>
         <EditButton product={product} />
       </div>
@@ -45,7 +53,7 @@ const ProductBrandWidget = ({
         )}
       >
         <Text size="small" weight="plus" leading="compact">
-          Name
+          Brand Name :
         </Text>
 
         <Text
@@ -54,6 +62,17 @@ const ProductBrandWidget = ({
           className="whitespace-pre-line text-pretty"
         >
           {brandName || "-"}
+        </Text>
+        <Text size="small" weight="plus" leading="compact">
+          Business Central Product Id :
+        </Text>
+
+        <Text
+          size="small"
+          leading="compact"
+          className="whitespace-pre-line text-pretty"
+        >
+          {bcProductId || "-"}
         </Text>
       </div>
     </Container>
