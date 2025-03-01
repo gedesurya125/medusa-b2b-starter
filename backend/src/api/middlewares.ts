@@ -39,22 +39,27 @@ export default defineMiddlewares({
       middlewares: [validateAndTransformBody(PostAdminCreateBrand)],
     },
 
-    // ? Add Custom Field: Step 12 : add data validation to the /admin/products route. source: https://docs.medusajs.com/learn/customization/extend-features/extend-create-product#2-configure-additional-data-validation
+    // ? Add Custom Field Validator: Step 12 : add data validation to the /admin/products route. source: https://docs.medusajs.com/learn/customization/extend-features/extend-create-product#2-configure-additional-data-validation
+    // Product Create
     {
       matcher: "/admin/products",
       method: "POST",
       additionalDataValidator: {
+        // additional Data validator is the validator for the custom field
         brand_id: z.string().optional(),
         bc_product_info_id: z.string().optional(),
+        product_file_id: z.string().nullable(),
       },
     },
-
+    // Product Update
     {
       matcher: "/admin/products/:id",
       method: "POST",
       additionalDataValidator: {
+        // additional Data validator is the validator for the custom field
         brand_id: z.string().optional(),
         bc_product_info_id: z.string().optional(),
+        product_file_id: z.string().nullable(),
       },
     },
 

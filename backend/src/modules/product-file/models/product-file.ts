@@ -3,7 +3,7 @@ import { model } from "@medusajs/framework/utils";
 
 // ? This create a new table using DML language and the object below is defined the model columns, relations, and indexes
 export const ProductFile = model.define(
-  "product_file_upload", //? name of the data model, we should use the snake case naming here source https://docs.medusajs.com/learn/customization/custom-features/module
+  "product_file", //? name of the data model, we should use the snake case naming here source https://docs.medusajs.com/learn/customization/custom-features/module
   {
     //? this object is the data model's schema
     id: model.id().primaryKey(),

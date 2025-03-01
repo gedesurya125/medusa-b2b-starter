@@ -66,29 +66,29 @@
           "mappedType": "datetime"
         }
       },
-      "name": "product_file_upload",
+      "name": "product_file",
       "schema": "public",
       "indexes": [
         {
-          "keyName": "IDX_product_file_upload_file_url_unique",
+          "keyName": "IDX_product_file_file_url_unique",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_file_upload_file_url_unique\" ON \"product_file_upload\" (file_url) WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_file_file_url_unique\" ON \"product_file\" (file_url) WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_product_file_upload_deleted_at",
+          "keyName": "IDX_product_file_deleted_at",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_file_upload_deleted_at\" ON \"product_file_upload\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_file_deleted_at\" ON \"product_file\" (deleted_at) WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "product_file_upload_pkey",
+          "keyName": "product_file_pkey",
           "columnNames": [
             "id"
           ],

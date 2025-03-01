@@ -1,11 +1,7 @@
 // TODO: update this function file name to be product-created
 // ? Add Custom Field: Step 11: Extend the create product flow
 import { createProductsWorkflow } from "@medusajs/medusa/core-flows";
-import {
-  InvokeFn,
-  StepResponse,
-  WorkflowData,
-} from "@medusajs/framework/workflows-sdk";
+import { StepResponse, WorkflowData } from "@medusajs/framework/workflows-sdk";
 import { Modules } from "@medusajs/framework/utils";
 import { LinkDefinition, ProductDTO } from "@medusajs/framework/types";
 import { BRAND_MODULE } from "../../modules/brand";
@@ -13,6 +9,8 @@ import BrandModuleService from "../../modules/brand/service";
 import { MedusaContainer } from "@medusajs/framework";
 import { BC_PRODUCT_INFO_MODULE } from "src/modules/bcProductInfo";
 import BcProductInfoService from "src/modules/bcProductInfo/service";
+import ProductFileService from "src/modules/product-file/service";
+import { PRODUCT_FILE_MODULE } from "src/modules/product-file";
 
 type LinkHandlerFunctionType = (props: {
   products: WorkflowData<ProductDTO[]>;
@@ -20,7 +18,7 @@ type LinkHandlerFunctionType = (props: {
   additional_data: any;
 }) => Promise<LinkDefinition[]>;
 
-const handleLinkTheBrand: LinkHandlerFunctionType = async ({
+const handleBrandLink: LinkHandlerFunctionType = async ({
   products,
   container,
   additional_data,
@@ -48,7 +46,7 @@ const handleLinkTheBrand: LinkHandlerFunctionType = async ({
   return links;
 };
 
-const handleLinkTheBcProductInfo: LinkHandlerFunctionType = async ({
+const handleBcProductInfoLink: LinkHandlerFunctionType = async ({
   products,
   container,
   additional_data,
@@ -79,24 +77,59 @@ const handleLinkTheBcProductInfo: LinkHandlerFunctionType = async ({
   return links;
 };
 
+const handleProductFileLink: LinkHandlerFunctionType = async ({
+  products,
+  container,
+  additional_data,
+}) => {
+  if (!additional_data?.product_file_id) return [];
+
+  const productFileModuleService: ProductFileService =
+    container.resolve(PRODUCT_FILE_MODULE);
+
+  //  if the product file doesn't exist, an error is thrown
+  await productFileModuleService.retrieveProductFile(
+    additional_data?.product_file_id
+  );
+
+  const links: LinkDefinition[] = [];
+  for (const product of products) {
+    links.push({
+      [Modules.PRODUCT]: {
+        product_id: product.id,
+      },
+      [PRODUCT_FILE_MODULE]: {
+        product_file_id: additional_data.product_file_id,
+      },
+    });
+  }
+  return links;
+};
+
 createProductsWorkflow.hooks.productsCreated(
   // Step function
   async ({ products, additional_data }, { container }) => {
     // Consume the product hooks source https://docs.medusajs.com/learn/customization/extend-features/extend-create-product#1-consume-the-productscreated-hook
     // this function get the brand id when a product is created from the additional_data
-    const brandLinks = await handleLinkTheBrand({
+    const brandLinks = await handleBrandLink({
       products,
       container,
       additional_data,
     });
 
-    const bcProductInfoLinks = await handleLinkTheBcProductInfo({
+    const bcProductInfoLinks = await handleBcProductInfoLink({
       products,
       container,
       additional_data,
     });
 
-    const links = [...brandLinks, ...bcProductInfoLinks];
+    const productFileLinks = await handleProductFileLink({
+      products,
+      container,
+      additional_data,
+    });
+
+    const links = [...brandLinks, ...bcProductInfoLinks, ...productFileLinks];
     const link = container.resolve("link");
     const logger = container.resolve("logger");
     await link.create(links);

@@ -53,3 +53,21 @@ export async function POST(
 
   res.status(200).json({ files: storedFileResult });
 }
+
+// ? Add Custom Field: Step 15: expand the GET route, to support pagination
+export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
+  const query = req.scope.resolve("query");
+
+  const { data: productFile, metadata: { count, take, skip } = {} } =
+    await query.graph({
+      entity: "product_file",
+      ...req.queryConfig, // this property hold for the pagination
+    });
+
+  res.json({
+    productFile,
+    count,
+    limit: take,
+    offset: skip,
+  });
+};
