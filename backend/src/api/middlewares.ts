@@ -14,6 +14,11 @@ import {
 import { PostAdminCreateBrand } from "./admin/brands/validators";
 import { z } from "zod";
 import { createFindParams } from "@medusajs/medusa/api/utils/validators";
+import multer from "multer";
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+});
 
 export const GetBrandsSchema = createFindParams();
 
@@ -67,6 +72,15 @@ export default defineMiddlewares({
           defaults: ["id", "name", "products.*"],
           isList: true,
         }),
+      ],
+    },
+
+    {
+      matcher: "/admin/file-upload",
+      method: ["POST"],
+      middlewares: [
+        // @ts-ignore
+        upload.array("files"),
       ],
     },
   ],

@@ -1,12 +1,10 @@
+// source:  https://docs.medusajs.com/learn/fundamentals/api-routes/parse-body#configure-file-uploads
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { MedusaError } from "@medusajs/framework/utils";
 import { uploadFilesWorkflow } from "@medusajs/medusa/core-flows";
 
 export async function POST(req: MedusaRequest, res: MedusaResponse) {
-  // @ts-ignore
-  const files = req?.files;
-
-  console.log("this is the files", files);
+  const files = req?.files as Express.Multer.File[];
 
   if (!files?.length) {
     throw new MedusaError(
