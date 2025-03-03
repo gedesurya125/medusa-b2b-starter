@@ -1,121 +1,167 @@
+import { Product } from ".medusa/types/query-entry-points";
 import { MedusaContainer } from "@medusajs/framework";
-import { LinkDefinition, ProductDTO } from "@medusajs/framework/types";
+import { LinkDefinition } from "@medusajs/framework/types";
 import { Modules } from "@medusajs/framework/utils";
-import { StepResponse, WorkflowData } from "@medusajs/framework/workflows-sdk";
+import { StepResponse } from "@medusajs/framework/workflows-sdk";
 import { updateProductsWorkflow } from "@medusajs/medusa/core-flows";
+import { BC_PRODUCT_INFO_MODULE } from "src/modules/bcProductInfo";
+import BcProductInfoService from "src/modules/bcProductInfo/service";
 import { BRAND_MODULE } from "src/modules/brand";
 import BrandModuleService from "src/modules/brand/service";
 
-type LinkHandlerFunctionType = (props: {
-  products: WorkflowData<ProductDTO[]>;
-  container: MedusaContainer;
+type SingleProductLinkUpdateFunctionType = (props: {
+  productDetail: Product;
   additional_data: any;
-}) => Promise<LinkDefinition[]>;
+  container: MedusaContainer;
+}) => Promise<LinkDefinition | null>;
 
-const handleBrandLinkUpdate: LinkHandlerFunctionType = async ({
-  products,
-  container,
-  additional_data,
-}) => {
-  if (!additional_data?.brand_id) return [];
+// Handler function
 
-  const query = container.resolve("query");
-  const link = container.resolve("link");
+const handleSingleProductBrandLinkUpdate: SingleProductLinkUpdateFunctionType =
+  async ({ productDetail, additional_data, container }) => {
+    if (
+      !productDetail?.brand ||
+      productDetail?.brand?.id === additional_data?.brand_id
+    )
+      return null;
 
-  const brandModuleService: BrandModuleService =
-    container.resolve(BRAND_MODULE);
-  await brandModuleService.retrieveBrand(additional_data.brand_id as string);
-  const links: LinkDefinition[] = [];
+    const dismissSingleBrandLinkedToProduct = async ({
+      brandId,
+    }: {
+      brandId: string;
+    }) =>
+      await dismissSingleModuleLinkedToProduct({
+        container,
+        productId: productDetail.id,
+        moduleName: BRAND_MODULE,
+        moduleKey: "brand_id",
+        moduleId: brandId,
+      });
 
-  for (const product of products) {
-    // ?query source https://docs.medusajs.com/learn/fundamentals/module-links/query#apply-filters
-    const productDetail = await query
-      .graph({
-        entity: "product",
-        filters: {
-          id: product.id,
-        },
-        fields: ["*", "brand.*"],
-      })
-      .then((res) => res.data[0]);
-
-    // Check if the brand_id is not changed
-    if (productDetail?.brand?.id === additional_data.brand_id) {
-      return [];
+    if (Array.isArray(productDetail?.brand)) {
+      await Promise.all(
+        productDetail?.brand?.map(
+          async (brandItem) =>
+            await dismissSingleBrandLinkedToProduct({ brandId: brandItem.id })
+        )
+      );
     } else {
-      const dismissSingleModuleLinkedToProduct = async ({
-        productId,
-        brandId,
-      }: {
-        productId: string;
-        brandId: string;
-      }) => {
-        await link.dismiss({
-          [Modules.PRODUCT]: {
-            product_id: productId,
-          },
-          [BRAND_MODULE]: {
-            brand_id: brandId,
-          },
-        });
-      };
-
-      if (productDetail?.brand && Array.isArray(productDetail?.brand)) {
-        await Promise.all(
-          // ? the brand can be multiple, probably this is bug from medusa so we map it here
-          //@ts-ignore
-          productDetail?.brand?.map(
-            async (brandItem) =>
-              await dismissSingleModuleLinkedToProduct({
-                productId: product.id,
-                brandId: brandItem.id,
-              })
-          )
-        );
-      } else if (productDetail?.brand) {
-        await dismissSingleModuleLinkedToProduct({
-          productId: product.id,
-          brandId: productDetail?.brand?.id,
-        });
-      }
+      await dismissSingleBrandLinkedToProduct({
+        brandId: productDetail?.brand?.id,
+      });
     }
 
-    // ? Link to another product
-    links.push({
+    return {
       [Modules.PRODUCT]: {
-        product_id: product.id,
+        product_id: productDetail.id,
       },
       [BRAND_MODULE]: {
         brand_id: additional_data.brand_id,
       },
-    });
-  }
-  return links;
-};
+    };
+  };
+
+const handleSingleBcProductInfoLinkUpdate: SingleProductLinkUpdateFunctionType =
+  async ({ productDetail, additional_data, container }) => {
+    if (
+      !productDetail?.bc_product_info ||
+      productDetail?.bc_product_info?.id === additional_data?.bc_product_info_id
+    )
+      return null;
+
+    const dismissSingleBcProductInfoLinkedToProduct = async ({
+      bcProductInfoId,
+    }: {
+      bcProductInfoId: string;
+    }) =>
+      await dismissSingleModuleLinkedToProduct({
+        container,
+        productId: productDetail.id,
+        moduleName: BC_PRODUCT_INFO_MODULE,
+        moduleKey: "bc_product_info_id",
+        moduleId: bcProductInfoId,
+      });
+
+    if (Array.isArray(productDetail?.bc_product_info)) {
+      await Promise.all(
+        productDetail?.bc_product_info?.map(
+          async (bcProductInfoItem) =>
+            await dismissSingleBcProductInfoLinkedToProduct({
+              bcProductInfoId: bcProductInfoItem.id,
+            })
+        )
+      );
+    } else {
+      await dismissSingleBcProductInfoLinkedToProduct({
+        bcProductInfoId: productDetail?.bc_product_info?.id,
+      });
+    }
+
+    return {
+      [Modules.PRODUCT]: {
+        product_id: productDetail.id,
+      },
+      [BC_PRODUCT_INFO_MODULE]: {
+        bc_product_info_id: additional_data.bc_product_info_id,
+      },
+    };
+  };
+
+// Main function
 
 updateProductsWorkflow.hooks.productsUpdated(
   async ({ products, additional_data }, { container }) => {
-    if (!additional_data?.brand_id) {
+    if (!additional_data?.brand_id && !additional_data?.bc_product_info_id) {
       return new StepResponse([], []);
     }
 
-    const brandModuleService: BrandModuleService =
-      container.resolve(BRAND_MODULE);
+    // ? Module Record Existence Checker Section
+    if (additional_data?.brand_id) {
+      const brandModuleService: BrandModuleService =
+        container.resolve(BRAND_MODULE);
 
-    // if the brand doesn't exist, an error is thrown.
-    await brandModuleService.retrieveBrand(additional_data.brand_id as string);
+      // if the brand doesn't exist, an error is thrown.
+      await brandModuleService.retrieveBrand(
+        additional_data.brand_id as string
+      );
+    }
 
-    // link brand to product
+    if (additional_data?.bc_product_info_id) {
+      const bcProductInfoService: BcProductInfoService = container.resolve(
+        BC_PRODUCT_INFO_MODULE
+      );
+
+      // if the brand doesn't exist, an error is thrown.
+      await bcProductInfoService.retrieveBcProductInfo(
+        additional_data.bc_product_info_id as string
+      );
+    }
+
     const link = container.resolve("link");
     const logger = container.resolve("logger");
 
-    const newBrandLinks = await handleBrandLinkUpdate({
-      products,
-      container,
-      additional_data,
-    });
+    const links: LinkDefinition[] = [];
 
-    const links: LinkDefinition[] = [...newBrandLinks];
+    for (const product of products) {
+      // ? query source https://docs.medusajs.com/learn/fundamentals/module-links/query#apply-filters
+      const productDetail = await getProductDetailById({
+        productId: product.id,
+        container,
+      });
+      const productBrandLink = await handleSingleProductBrandLinkUpdate({
+        productDetail,
+        additional_data,
+        container,
+      });
+      if (productBrandLink) links.push(productBrandLink);
+
+      const bcProductInfoLink = await handleSingleBcProductInfoLinkUpdate({
+        productDetail,
+        additional_data,
+        container,
+      });
+      if (bcProductInfoLink) links.push(bcProductInfoLink);
+    }
 
     await link.create(links);
     logger.info(`Linked brand to products ${JSON.stringify(link, null, 2)}`);
@@ -132,3 +178,50 @@ updateProductsWorkflow.hooks.productsUpdated(
     await link.dismiss(links);
   }
 );
+
+// Reusable Function
+//? Regular function is Accessible before initialization
+async function dismissSingleModuleLinkedToProduct({
+  productId,
+  moduleId,
+  container,
+  moduleKey,
+  moduleName,
+}: {
+  productId: string;
+  moduleId: string;
+  container: MedusaContainer;
+  moduleKey: string;
+  moduleName: string;
+}) {
+  const link = container.resolve("link");
+
+  await link.dismiss({
+    [Modules.PRODUCT]: {
+      product_id: productId,
+    },
+    [moduleName]: {
+      [moduleKey]: moduleId,
+    },
+  });
+}
+
+async function getProductDetailById({
+  productId,
+  container,
+}: {
+  productId: string;
+  container: MedusaContainer;
+}) {
+  const query = container.resolve("query");
+
+  return await query
+    .graph({
+      entity: "product",
+      filters: {
+        id: productId,
+      },
+      fields: ["*", "brand.*", "bc_product_info.*"],
+    })
+    .then((res) => res.data[0]);
+}
