@@ -30,11 +30,7 @@ export const Container = ({
           onClickMenuDelete={onClickMenuDelete}
         />
       </div>
-      <div
-        className={clx(
-          `text-ui-fg-subtle grid grid-cols-2 items-center px-6 py-4`
-        )}
-      >
+      <div className={clx(`text-ui-fg-subtle items-center px-6 py-4`)}>
         {children}
       </div>
     </MedusaContainer>
