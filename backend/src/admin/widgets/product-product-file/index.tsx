@@ -1,0 +1,38 @@
+import { defineWidgetConfig } from "@medusajs/admin-sdk";
+import { AdminProduct, DetailWidgetProps } from "@medusajs/framework/types";
+import { Container } from "../../components/common/Container";
+import { useQuery } from "@tanstack/react-query";
+import { sdk } from "../../lib/sdk";
+import { AdminProductWithProductFiles } from "./types";
+import { FileTable } from "./FileTable";
+
+const ProductFileWidget = ({
+  data: product,
+}: DetailWidgetProps<AdminProduct>) => {
+  const { data: queryResult } = useQuery({
+    queryFn: () =>
+      sdk.admin.product.retrieve(product.id, {
+        fields: "+product_files.*",
+      }),
+    queryKey: ["product", product.id],
+  });
+  const extendedResponse = queryResult?.product as AdminProductWithProductFiles;
+
+  console.log("this is the query result", extendedResponse?.product_files);
+
+  return (
+    <Container
+      title="Product Files"
+      onClickMenuAdd={() => {}}
+      onClickMenuEdit={() => {}}
+    >
+      <FileTable productFiles={extendedResponse?.product_files} />
+    </Container>
+  );
+};
+
+export const config = defineWidgetConfig({
+  zone: "product.details.before",
+});
+
+export default ProductFileWidget;
