@@ -3,7 +3,7 @@ import { sdk } from "../../../lib/sdk";
 import { queryKeysFactory } from "../../../../admin/lib/query-key-factory";
 
 export const brandQueryKey = queryKeysFactory("brand");
-type Brand = {
+export type Brand = {
   id: string;
   name: string;
 };

@@ -143,11 +143,11 @@ updateProductsWorkflow.hooks.productsUpdated(
     const links: LinkDefinition[] = [];
 
     for (const product of products) {
-      // ? query source https://docs.medusajs.com/learn/fundamentals/module-links/query#apply-filters
       const productDetail = await getProductDetailById({
         productId: product.id,
         container,
       });
+
       const productBrandLink = await handleSingleProductBrandLinkUpdate({
         productDetail,
         additional_data,
@@ -164,7 +164,7 @@ updateProductsWorkflow.hooks.productsUpdated(
     }
 
     await link.create(links);
-    logger.info(`Linked brand to products ${JSON.stringify(link, null, 2)}`);
+    logger.info(`Updated Product Link ${JSON.stringify(link, null, 2)}`);
     return new StepResponse(links, links); //? the second parameter is passed to the compensation function source: https://docs.medusajs.com/learn/customization/extend-features/extend-create-product#link-brand-to-product
   },
 
@@ -215,6 +215,7 @@ async function getProductDetailById({
 }) {
   const query = container.resolve("query");
 
+  // ? query source https://docs.medusajs.com/learn/fundamentals/module-links/query#apply-filters
   return await query
     .graph({
       entity: "product",

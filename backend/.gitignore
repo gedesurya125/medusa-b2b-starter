@@ -25,3 +25,7 @@ build
 !.yarn/versions
 
 .medusa
+
+ Files: 
+static/*.mov
+static/*.pdf

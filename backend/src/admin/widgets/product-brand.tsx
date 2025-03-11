@@ -2,11 +2,20 @@
 
 import { defineWidgetConfig } from "@medusajs/admin-sdk";
 import { DetailWidgetProps, AdminProduct } from "@medusajs/framework/types";
-import { Button, clx, Container, Heading, Select, Text } from "@medusajs/ui";
+import {
+  Button,
+  clx,
+  Container,
+  Heading,
+  Input,
+  Select,
+  Text,
+} from "@medusajs/ui";
 import { useQuery } from "@tanstack/react-query";
 import { sdk } from "../lib/sdk";
 import { Drawer } from "@medusajs/ui";
 import {
+  Brand,
   BrandsResponse,
   useBrands,
 } from "../routes/brands/components/useBrands";
@@ -80,11 +89,14 @@ const ProductBrandWidget = ({
 };
 
 const EditButton = ({ product }: { product: AdminProduct }) => {
-  const [selectedBrand, setSelectedBrand] = useState("");
+  const [formData, setFormData] = useState({ brand: "" });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
   const { data } = useBrands({ limit: 20, offset: 0 });
 
   const handleProductUpdate = async () => {
-    // ! handleProductUpdate is not working
     const updatedProduct = await sdk.client.fetch(
       `/admin/products/${product.id}`,
       {
@@ -95,7 +107,7 @@ const EditButton = ({ product }: { product: AdminProduct }) => {
         body: {
           additional_data: {
             brand_id: data?.brands.find(
-              (brandItem) => brandItem.name === selectedBrand
+              (brandItem) => brandItem.name === formData.brand
             )?.id,
           },
         },
@@ -119,9 +131,10 @@ const EditButton = ({ product }: { product: AdminProduct }) => {
         </Drawer.Header>
         <Drawer.Body>
           <EditDrawerBody
-            brands={data}
-            selectedBrand={selectedBrand}
-            setSelectedBrand={setSelectedBrand}
+            brandOptions={data?.brands}
+            selectedBrand={formData.brand}
+            setSelectedBrand={setFormData}
+            handleChange={handleChange}
           />
         </Drawer.Body>
         <Drawer.Footer>
@@ -138,34 +151,39 @@ const EditButton = ({ product }: { product: AdminProduct }) => {
 const EditDrawerBody = ({
   selectedBrand,
   setSelectedBrand,
-  brands,
+  brandOptions,
 }: {
   selectedBrand: string;
   setSelectedBrand: any;
-  brands?: BrandsResponse;
+  brandOptions?: Brand[];
+  handleChange?: (e: any) => void;
 }) => {
   // const { data } = useBrands({ limit: 20, offset: 0 });
 
   console.log("this is the selected brand", selectedBrand);
 
   return (
-    <Select
-      value={selectedBrand}
-      onValueChange={(value) => {
-        setSelectedBrand(value);
-      }}
-    >
-      <Select.Trigger>
-        <Select.Value placeholder="Select a brand" />
-      </Select.Trigger>
-      <Select.Content>
-        {brands?.brands.map((item) => (
-          <Select.Item key={item.id} value={item.name}>
-            {item.name}
-          </Select.Item>
-        ))}
-      </Select.Content>
-    </Select>
+    <>
+      <Select
+        name="brand"
+        value={selectedBrand}
+        onValueChange={(value) => {
+          setSelectedBrand(value);
+        }}
+      >
+        <Select.Trigger>
+          <Select.Value placeholder="Select a brand" />
+        </Select.Trigger>
+        <Select.Content>
+          {brandOptions?.map((item) => (
+            <Select.Item key={item.id} value={item.name}>
+              {item.name}
+            </Select.Item>
+          ))}
+        </Select.Content>
+      </Select>
+      <Input placeholder="Sales Channel Name" id="sales-channel-name" />
+    </>
   );
 };
 
