@@ -58,20 +58,20 @@ export function Menu({
       </DropdownMenu.Trigger>
       <DropdownMenu.Content>
         {onClickMenuAdd && (
-          <DropdownMenu.Item className="gap-x-2">
+          <DropdownMenu.Item className="gap-x-2" onClick={onClickMenuAdd}>
             <Plus className="text-ui-fg-subtle" />
             Add
           </DropdownMenu.Item>
         )}
         {onClickMenuEdit && (
-          <DropdownMenu.Item className="gap-x-2">
+          <DropdownMenu.Item className="gap-x-2" onClick={onClickMenuEdit}>
             <PencilSquare className="text-ui-fg-subtle" />
             Edit
           </DropdownMenu.Item>
         )}
         {onClickMenuDelete && (
           <>
-            <DropdownMenu.Separator />
+            <DropdownMenu.Separator onClick={onClickMenuDelete} />
             <DropdownMenu.Item className="gap-x-2">
               <Trash className="text-ui-fg-subtle" />
               Delete
