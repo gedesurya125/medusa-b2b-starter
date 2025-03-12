@@ -5,7 +5,7 @@ import {
   DropzoneProps,
 } from "../../../../src/admin/components/common/Dropzone";
 import React from "react";
-import { useUpdateProductFiles } from "./useProductWithProductFile";
+import { useUpdateProductFiles } from "./useProductFiles";
 import { AdminProductWithProductFiles } from "./types";
 
 interface ProductFileUploadModalProps

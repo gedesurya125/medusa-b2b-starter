@@ -5,14 +5,14 @@ import { Container } from "../../components/common/Container";
 import { FileTable } from "./FileTable";
 import { ProductFileUploadModal } from "./ProductFieldUploadModal";
 import React from "react";
-import { useProductWithProductFile } from "./useProductWithProductFile";
+import { useProductFiles } from "./useProductFiles";
 
 const ProductFileWidget = ({
   data: product,
 }: DetailWidgetProps<AdminProduct>) => {
   const [openFileUploadModal, setOpenFieldUploadModal] = React.useState(false);
 
-  const productWithFiles = useProductWithProductFile({ productId: product.id });
+  const productWithFiles = useProductFiles({ productId: product.id });
 
   return (
     <>

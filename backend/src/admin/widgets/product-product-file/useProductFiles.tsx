@@ -6,7 +6,7 @@ import {
   ProductFileType,
   UploadFilesSuccessResponseDataType,
 } from "./types";
-import { queryKeysFactory } from "../../../../src/admin/lib/query-key-factory";
+import { queryKeysFactory } from "../../lib/query-key-factory";
 import { AdminProduct } from "@medusajs/framework/types";
 import type { Product } from "../../../../.medusa/types/query-entry-points";
 
@@ -17,7 +17,7 @@ interface UseProductWithProductFileParamsType {
 // TODO: use this productQueryKey in another widget related to the product
 const productsQueryKey = queryKeysFactory("products");
 
-export const useProductWithProductFile = ({
+export const useProductFiles = ({
   productId,
 }: UseProductWithProductFileParamsType) => {
   const { data: queryResult } = useQuery({
