@@ -8,7 +8,8 @@ import { createProductFileWorkflow } from "src/workflows/product-file/workflows/
 type PostAdminCreateProductFileType = {
   //? i guess it should be the same in the validators
   files: any;
-  alts: string[];
+  alts: string[] | string;
+  alt: string;
 };
 
 export async function POST(
@@ -18,6 +19,8 @@ export async function POST(
   const files = req?.files as Express.Multer.File[];
 
   if (!files?.length) {
+    console.log("this is the files", files);
+
     throw new MedusaError(
       MedusaError.Types.INVALID_DATA,
       "No files were uploaded"
@@ -40,12 +43,17 @@ export async function POST(
   // TODO: Currently
   const storedFileResult = await Promise.all(
     uploadFilesWorkflowResult.map(async (uploadFileResultItem, index) => {
+      const hasMultipleAlts =
+        Array.isArray(req.validatedBody?.alts) &&
+        req.validatedBody?.alts?.length > 0;
       const { result: createProductFileWorkflowResult } =
         await createProductFileWorkflow(req.scope).run({
           //? req.scope container medusa container source: https://docs.medusajs.com/learn/fundamentals/medusa-container
           input: {
             file_url: uploadFileResultItem.url,
-            alt: req.validatedBody.alts[index],
+            alt: hasMultipleAlts
+              ? req.validatedBody?.alts[index]
+              : req.validatedBody?.alt,
           },
         });
       return createProductFileWorkflowResult;

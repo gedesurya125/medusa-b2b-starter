@@ -165,6 +165,7 @@ const handleSingleBcProductInfoLinkUpdate: SingleProductLinkUpdateFunctionType =
 
 const handleProductFilesLinkUpdate: MultipleProductLinkUpdateFunctionType =
   async ({ productDetail, additional_data, container }) => {
+    // TODO: Handle remove the file that not used anymore
     const hasProductFilesLinkedToProduct =
       productDetail?.product_files &&
       productDetail?.product_files &&
@@ -259,7 +260,6 @@ updateProductsWorkflow.hooks.productsUpdated(
 
     // ? Linking Section
     const link = container.resolve("link");
-    const logger = container.resolve("logger");
 
     const links: LinkDefinition[] = [];
 
@@ -289,25 +289,11 @@ updateProductsWorkflow.hooks.productsUpdated(
         additional_data,
         container,
       });
-      logger.info(
-        JSON.stringify(
-          { message: "this is the prouct file links", productFileLinks },
-          null,
-          2
-        )
-      );
 
       if (productFileLinks) links.push(...productFileLinks);
     }
 
     await link.create(links);
-    logger.info(
-      `Updated Product Link ${JSON.stringify(
-        { fileIds: additional_data?.product_file_ids, links },
-        null,
-        2
-      )}`
-    );
     return new StepResponse(links, links); //? the second parameter is passed to the compensation function source: https://docs.medusajs.com/learn/customization/extend-features/extend-create-product#link-brand-to-product
   },
 

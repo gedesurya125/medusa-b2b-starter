@@ -1,5 +1,4 @@
-import React from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { sdk } from "../../lib/sdk";
 import {
@@ -8,7 +7,7 @@ import {
 } from "./types";
 import { queryKeysFactory } from "../../../../src/admin/lib/query-key-factory";
 import { AdminProduct } from "@medusajs/framework/types";
-import { MedusaError } from "@medusajs/framework/utils";
+import { Product } from "node_modules/@medusajs/js-sdk/dist/admin/product";
 
 interface UseProductWithProductFileParamsType {
   productId: string;
@@ -31,60 +30,78 @@ export const useProductWithProductFile = ({
   return extendedResponse;
 };
 
-export const updateProductWithProductFile = () => {
+export const useUpdateProductFiles = () => {
+  const queryClient = useQueryClient();
+
   const mutation = useMutation({
     mutationFn: async ({
       product,
-      fileWithAlts,
+      files,
+      alts,
     }: {
       product: AdminProduct;
-      fileWithAlts: { file: File; alt: string }[];
+      files: FileList;
+      alts: string[];
     }) => {
       const formData = new FormData();
 
       // ? Uploading multiple files in single form data key https://developer.mozilla.org/en-US/docs/Web/API/FormData/append
-      fileWithAlts.forEach((fileWithAltItem) => {
-        formData.append("files", fileWithAltItem.file);
-        formData.append("alts", fileWithAltItem.alt);
-      });
+      if (files.length === 1) {
+        formData.append("files", files[0]);
+        formData.append("alt", alts[0]);
+      } else if (files.length > 1) {
+        for (let i = 0; i < files.length; i++) {
+          formData.append("files", files[i]);
+          formData.append("alts", alts[i]);
+        }
+      }
+
+      console.log("this is the form data", formData.get("files"));
 
       //? the sdk.client.fetch automatically parsed to a javascript object : https://docs.medusajs.com/resources/js-sdk#send-requests-to-custom-routes
-
-      const uploadedFiles = await sdk.client.fetch<
-        UploadFilesSuccessResponseDataType | undefined
-      >("/admin/product-file", {
-        method: "POST",
-        body: formData,
-      });
+      // ? Sending the request to the custom route need to use sdk.client.fetch https://docs.medusajs.com/resources/js-sdk#send-requests-to-custom-routes
+      // ! The Sdk.client.fetch not support form-data
+      const uploadedFiles = await fetch(
+        "http://localhost:9000/admin/product-file",
+        {
+          method: "POST",
+          body: formData,
+        }
+      ).then((res) => res.json());
 
       console.log("this is the uploaded files", uploadedFiles);
 
-      if (!uploadedFiles)
-        throw new MedusaError(
-          MedusaError.Types.INVALID_DATA,
-          "No files were uploaded"
-        );
-
-      const updatedProduct = await sdk.client.fetch(
-        `/admin/products/${product.id}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: {
-            additional_data: {
-              product_file_id: "",
+      if (uploadedFiles) {
+        const updatedProduct = await sdk.client.fetch<{ product: Product }>(
+          `/admin/products/${product.id}?fields=+bc_product_info.*,+brand.*,+product_files.*`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
             },
-          },
-        }
-      );
-      // 1. upload the product file
-      // ? Sending the request to the custom route need to use sdk.client.fetch https://docs.medusajs.com/resources/js-sdk#send-requests-to-custom-routes
-
-      // 2. update the product by assign the product file id to the product
+            body: {
+              additional_data: {
+                product_file_ids: uploadedFiles.files.map(
+                  (fileItem) => fileItem.id
+                ),
+              },
+            },
+          }
+        );
+        return { updatedProduct, product };
+      }
+    },
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({
+        queryKey: productsQueryKey.detail(variables.product.id),
+      });
+    },
+    onError: (error, variables, context) => {
+      // TODO: handle error and handle roll back eg: undoing the file upload if the product update failed
     },
   });
+
+  return mutation;
 };
 
 //? js-sdk admin product : https://docs.medusajs.com/resources/references/js-sdk/admin/product

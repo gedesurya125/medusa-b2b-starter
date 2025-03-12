@@ -132,9 +132,7 @@ createProductsWorkflow.hooks.productsCreated(
 
     const links = [...brandLinks, ...bcProductInfoLinks, ...productFileLinks];
     const link = container.resolve("link");
-    const logger = container.resolve("logger");
     await link.create(links);
-    logger.info("Linked brand or bc product info to products");
     return new StepResponse(links, links); //? the second parameter is passed to the compensation function
   },
 
