@@ -1,7 +1,9 @@
-import { Table } from "@medusajs/ui";
+import { Button, Table, Text } from "@medusajs/ui";
 
 import { Thumbnail } from "../../components";
 import { ProductFileType } from "./types";
+import { Trash } from "@medusajs/icons";
+import { Menu } from "../../../../src/admin/components/common/Container";
 
 export const FileTable = ({
   productFiles,
@@ -15,6 +17,7 @@ export const FileTable = ({
           <Table.HeaderCell>No.</Table.HeaderCell>
           <Table.HeaderCell>File</Table.HeaderCell>
           <Table.HeaderCell>Alt</Table.HeaderCell>
+          <Table.HeaderCell></Table.HeaderCell>
         </Table.Row>
       </Table.Header>
       <Table.Body>
@@ -45,7 +48,10 @@ const FileTableRow = ({
       <Table.Cell>
         <Thumbnail src={productFile.file_url} alt={productFile.alt} />
       </Table.Cell>
-      <Table.Cell>{productFile.alt}</Table.Cell>
+      <Table.Cell className="w-full">{productFile.alt}</Table.Cell>
+      <Table.Cell>
+        <Menu onClickMenuEdit={() => {}} onClickMenuDelete={() => {}} />
+      </Table.Cell>
     </Table.Row>
   );
 };

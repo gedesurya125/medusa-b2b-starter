@@ -21,7 +21,6 @@ const ProductFileWidget = ({
         onClickMenuAdd={() => {
           setOpenFieldUploadModal(true);
         }}
-        onClickMenuEdit={() => {}}
       >
         <FileTable productFiles={productWithFiles?.product_files} />
       </Container>
