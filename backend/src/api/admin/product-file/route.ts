@@ -8,7 +8,7 @@ import { createProductFileWorkflow } from "src/workflows/product-file/workflows/
 type PostAdminCreateProductFileType = {
   //? i guess it should be the same in the validators
   files: any;
-  alt: string;
+  alts: string[];
 };
 
 export async function POST(
@@ -37,14 +37,15 @@ export async function POST(
     },
   });
 
+  // TODO: Currently
   const storedFileResult = await Promise.all(
-    uploadFilesWorkflowResult.map(async (uploadFileResultItem) => {
+    uploadFilesWorkflowResult.map(async (uploadFileResultItem, index) => {
       const { result: createProductFileWorkflowResult } =
         await createProductFileWorkflow(req.scope).run({
           //? req.scope container medusa container source: https://docs.medusajs.com/learn/fundamentals/medusa-container
           input: {
             file_url: uploadFileResultItem.url,
-            alt: req.validatedBody.alt,
+            alt: req.validatedBody.alts[index],
           },
         });
       return createProductFileWorkflowResult;

@@ -7,22 +7,16 @@ import { AdminProductWithProductFiles } from "./types";
 import { FileTable } from "./FileTable";
 import { ProductFileUploadModal } from "./ProductFieldUploadModal";
 import React from "react";
+import { useProductWithProductFile } from "./useProductWithProductFile";
 
 const ProductFileWidget = ({
   data: product,
 }: DetailWidgetProps<AdminProduct>) => {
   const [openFileUploadModal, setOpenFieldUploadModal] = React.useState(false);
 
-  const { data: queryResult } = useQuery({
-    queryFn: () =>
-      sdk.admin.product.retrieve(product.id, {
-        fields: "+product_files.*",
-      }),
-    queryKey: ["product", product.id],
-  });
-  const extendedResponse = queryResult?.product as AdminProductWithProductFiles;
+  const extendedResponse = useProductWithProductFile({ productId: product.id });
 
-  console.log("this is the query result", extendedResponse?.product_files);
+  const handleSave = () => {};
 
   return (
     <>
@@ -38,7 +32,7 @@ const ProductFileWidget = ({
       <ProductFileUploadModal
         open={openFileUploadModal}
         onOpenChange={setOpenFieldUploadModal}
-        handleSave={() => {}}
+        handleSave={handleSave}
       />
     </>
   );

@@ -1,8 +1,8 @@
 import { Product } from ".medusa/types/query-entry-points";
 import { MedusaContainer } from "@medusajs/framework";
-import { LinkDefinition } from "@medusajs/framework/types";
+import { LinkDefinition, ProductDTO } from "@medusajs/framework/types";
 import { Modules } from "@medusajs/framework/utils";
-import { StepResponse } from "@medusajs/framework/workflows-sdk";
+import { StepResponse, WorkflowData } from "@medusajs/framework/workflows-sdk";
 import { updateProductsWorkflow } from "@medusajs/medusa/core-flows";
 import { BC_PRODUCT_INFO_MODULE } from "src/modules/bcProductInfo";
 import BcProductInfoService from "src/modules/bcProductInfo/service";
@@ -14,6 +14,54 @@ type SingleProductLinkUpdateFunctionType = (props: {
   additional_data: any;
   container: MedusaContainer;
 }) => Promise<LinkDefinition | null>;
+
+// Reusable Function
+//? Regular function is Accessible before initialization
+async function dismissSingleModuleLinkedToProduct({
+  productId,
+  moduleId,
+  container,
+  moduleKey,
+  moduleName,
+}: {
+  productId: string;
+  moduleId: string;
+  container: MedusaContainer;
+  moduleKey: string;
+  moduleName: string;
+}) {
+  const link = container.resolve("link");
+
+  await link.dismiss({
+    [Modules.PRODUCT]: {
+      product_id: productId,
+    },
+    [moduleName]: {
+      [moduleKey]: moduleId,
+    },
+  });
+}
+
+async function getProductDetailById({
+  productId,
+  container,
+}: {
+  productId: string;
+  container: MedusaContainer;
+}) {
+  const query = container.resolve("query");
+
+  // ? query source https://docs.medusajs.com/learn/fundamentals/module-links/query#apply-filters
+  return await query
+    .graph({
+      entity: "product",
+      filters: {
+        id: productId,
+      },
+      fields: ["*", "brand.*", "bc_product_info.*"],
+    })
+    .then((res) => res.data[0]);
+}
 
 // Handler function
 
@@ -143,6 +191,7 @@ updateProductsWorkflow.hooks.productsUpdated(
     const links: LinkDefinition[] = [];
 
     for (const product of products) {
+      // ? NOTE we cannot follow the product-created hook code structure because  we need to fetch the product detail
       const productDetail = await getProductDetailById({
         productId: product.id,
         container,
@@ -178,51 +227,3 @@ updateProductsWorkflow.hooks.productsUpdated(
     await link.dismiss(links);
   }
 );
-
-// Reusable Function
-//? Regular function is Accessible before initialization
-async function dismissSingleModuleLinkedToProduct({
-  productId,
-  moduleId,
-  container,
-  moduleKey,
-  moduleName,
-}: {
-  productId: string;
-  moduleId: string;
-  container: MedusaContainer;
-  moduleKey: string;
-  moduleName: string;
-}) {
-  const link = container.resolve("link");
-
-  await link.dismiss({
-    [Modules.PRODUCT]: {
-      product_id: productId,
-    },
-    [moduleName]: {
-      [moduleKey]: moduleId,
-    },
-  });
-}
-
-async function getProductDetailById({
-  productId,
-  container,
-}: {
-  productId: string;
-  container: MedusaContainer;
-}) {
-  const query = container.resolve("query");
-
-  // ? query source https://docs.medusajs.com/learn/fundamentals/module-links/query#apply-filters
-  return await query
-    .graph({
-      entity: "product",
-      filters: {
-        id: productId,
-      },
-      fields: ["*", "brand.*", "bc_product_info.*"],
-    })
-    .then((res) => res.data[0]);
-}

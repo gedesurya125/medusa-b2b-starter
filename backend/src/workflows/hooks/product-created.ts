@@ -82,27 +82,28 @@ const handleProductFileLink: LinkHandlerFunctionType = async ({
   container,
   additional_data,
 }) => {
-  if (!additional_data?.product_file_id) return [];
+  if (!additional_data?.product_file_ids) return [];
 
   const productFileModuleService: ProductFileService =
     container.resolve(PRODUCT_FILE_MODULE);
 
-  //  if the product file doesn't exist, an error is thrown
-  await productFileModuleService.retrieveProductFile(
-    additional_data?.product_file_id
-  );
-
   const links: LinkDefinition[] = [];
-  for (const product of products) {
-    links.push({
-      [Modules.PRODUCT]: {
-        product_id: product.id,
-      },
-      [PRODUCT_FILE_MODULE]: {
-        product_file_id: additional_data.product_file_id,
-      },
-    });
+  //  if the product file doesn't exist, an error is thrown
+
+  for (const product_file_id of additional_data?.product_file_ids) {
+    await productFileModuleService.retrieveProductFile(product_file_id);
+    for (const product of products) {
+      links.push({
+        [Modules.PRODUCT]: {
+          product_id: product.id,
+        },
+        [PRODUCT_FILE_MODULE]: {
+          product_file_id: product_file_id,
+        },
+      });
+    }
   }
+
   return links;
 };
 

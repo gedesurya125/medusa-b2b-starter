@@ -48,7 +48,7 @@ export default defineMiddlewares({
         // additional Data validator is the validator for the custom field
         brand_id: z.string().optional(),
         bc_product_info_id: z.string().optional(),
-        product_file_id: z.string().optional(),
+        product_file_ids: z.string().array().optional(),
       },
     },
     // Product Update
@@ -59,7 +59,7 @@ export default defineMiddlewares({
         // additional Data validator is the validator for the custom field
         brand_id: z.string().optional(),
         bc_product_info_id: z.string().optional(),
-        product_file_id: z.string().optional(),
+        product_file_ids: z.string().array().optional(),
       },
     },
 

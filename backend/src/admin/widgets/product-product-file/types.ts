@@ -12,3 +12,14 @@ export type ProductFileType = {
 export type AdminProductWithProductFiles = AdminProduct & {
   product_files: ProductFileType[];
 };
+
+export type UploadFilesSuccessResponseDataType = {
+  files: {
+    id: string;
+    file_url: string | null;
+    alt: string | null;
+    created_at: string | null;
+    updated_at: string | null;
+    deleted_at: string | null;
+  }[];
+};

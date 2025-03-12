@@ -96,6 +96,7 @@ const EditButton = ({ product }: { product: AdminProduct }) => {
   };
   const { data } = useBrands({ limit: 20, offset: 0 });
 
+  // ? Sending the request to the custom route need to use sdk.client.fetch https://docs.medusajs.com/resources/js-sdk#send-requests-to-custom-routes
   const handleProductUpdate = async () => {
     const updatedProduct = await sdk.client.fetch(
       `/admin/products/${product.id}`,
