@@ -1,19 +1,26 @@
 import { Product } from ".medusa/types/query-entry-points";
 import { MedusaContainer } from "@medusajs/framework";
-import { LinkDefinition, ProductDTO } from "@medusajs/framework/types";
+import { LinkDefinition } from "@medusajs/framework/types";
 import { Modules } from "@medusajs/framework/utils";
-import { StepResponse, WorkflowData } from "@medusajs/framework/workflows-sdk";
+import { StepResponse } from "@medusajs/framework/workflows-sdk";
 import { updateProductsWorkflow } from "@medusajs/medusa/core-flows";
 import { BC_PRODUCT_INFO_MODULE } from "src/modules/bcProductInfo";
 import BcProductInfoService from "src/modules/bcProductInfo/service";
 import { BRAND_MODULE } from "src/modules/brand";
 import BrandModuleService from "src/modules/brand/service";
+import { PRODUCT_FILE_MODULE } from "src/modules/product-file";
+import ProductFileService from "src/modules/product-file/service";
 
 type SingleProductLinkUpdateFunctionType = (props: {
   productDetail: Product;
   additional_data: any;
   container: MedusaContainer;
 }) => Promise<LinkDefinition | null>;
+type MultipleProductLinkUpdateFunctionType = (props: {
+  productDetail: Product;
+  additional_data: any;
+  container: MedusaContainer;
+}) => Promise<LinkDefinition[] | null>;
 
 // Reusable Function
 //? Regular function is Accessible before initialization
@@ -58,7 +65,7 @@ async function getProductDetailById({
       filters: {
         id: productId,
       },
-      fields: ["*", "brand.*", "bc_product_info.*"],
+      fields: ["*", "brand.*", "bc_product_info.*", "product_files.*"],
     })
     .then((res) => res.data[0]);
 }
@@ -121,14 +128,15 @@ const handleSingleBcProductInfoLinkUpdate: SingleProductLinkUpdateFunctionType =
       bcProductInfoId,
     }: {
       bcProductInfoId: string;
-    }) =>
-      await dismissSingleModuleLinkedToProduct({
+    }) => {
+      return await dismissSingleModuleLinkedToProduct({
         container,
         productId: productDetail.id,
         moduleName: BC_PRODUCT_INFO_MODULE,
         moduleKey: "bc_product_info_id",
         moduleId: bcProductInfoId,
       });
+    };
 
     if (Array.isArray(productDetail?.bc_product_info)) {
       await Promise.all(
@@ -155,43 +163,108 @@ const handleSingleBcProductInfoLinkUpdate: SingleProductLinkUpdateFunctionType =
     };
   };
 
-// Main function
+const handleProductFilesLinkUpdate: MultipleProductLinkUpdateFunctionType =
+  async ({ productDetail, additional_data, container }) => {
+    const hasProductFilesLinkedToProduct =
+      productDetail?.product_files &&
+      productDetail?.product_files &&
+      productDetail.product_files.length > 0;
 
+    if (hasProductFilesLinkedToProduct) {
+      const dismissSingleFileLinkedToProduct = async ({
+        fileId,
+      }: {
+        fileId: string;
+      }) => {
+        return await dismissSingleModuleLinkedToProduct({
+          container,
+          productId: productDetail.id,
+          moduleName: PRODUCT_FILE_MODULE,
+          moduleKey: "product_file_id", //? every module has _id key https://docs.medusajs.com/learn/customization/extend-features/extend-create-product#link-brand-to-product
+          moduleId: fileId,
+        });
+      };
+
+      if (Array.isArray(productDetail.product_files)) {
+        await Promise.all(
+          productDetail.product_files.map(async (productFile) => {
+            if (!productFile) return;
+            return await dismissSingleFileLinkedToProduct({
+              fileId: productFile.id,
+            });
+          })
+        );
+      }
+    }
+
+    if (Array.isArray(additional_data?.product_file_ids)) {
+      const links: LinkDefinition[] = [];
+      additional_data.product_file_ids.forEach((productFileId: string) => {
+        links.push({
+          [Modules.PRODUCT]: {
+            product_id: productDetail.id,
+          },
+          [PRODUCT_FILE_MODULE]: {
+            product_file_id: productFileId,
+          },
+        });
+      });
+
+      return links;
+    }
+    return null;
+  };
+
+// Main function
+//? Additional data property https://docs.medusajs.com/learn/fundamentals/workflows/workflow-hooks#additional-data-property
 updateProductsWorkflow.hooks.productsUpdated(
   async ({ products, additional_data }, { container }) => {
-    if (!additional_data?.brand_id && !additional_data?.bc_product_info_id) {
+    const hasBrandId = additional_data?.brand_id;
+    const hasProductInfoId = additional_data?.bc_product_info_id;
+    const hasProductFileIds =
+      additional_data?.product_file_ids &&
+      Array.isArray(additional_data?.product_file_ids) &&
+      additional_data?.product_file_ids?.length > 0;
+
+    if (!hasBrandId && !hasProductInfoId && !hasProductFileIds) {
       return new StepResponse([], []);
     }
 
     // ? Module Record Existence Checker Section
-    if (additional_data?.brand_id) {
+    if (hasBrandId) {
       const brandModuleService: BrandModuleService =
         container.resolve(BRAND_MODULE);
-
-      // if the brand doesn't exist, an error is thrown.
       await brandModuleService.retrieveBrand(
         additional_data.brand_id as string
       );
     }
 
-    if (additional_data?.bc_product_info_id) {
+    if (hasProductInfoId) {
       const bcProductInfoService: BcProductInfoService = container.resolve(
         BC_PRODUCT_INFO_MODULE
       );
-
-      // if the brand doesn't exist, an error is thrown.
       await bcProductInfoService.retrieveBcProductInfo(
         additional_data.bc_product_info_id as string
       );
     }
 
+    if (hasProductFileIds) {
+      const productFileService: ProductFileService =
+        container.resolve(PRODUCT_FILE_MODULE);
+
+      for (const productFileId of additional_data?.product_file_ids as string[]) {
+        await productFileService.retrieveProductFile(productFileId);
+      }
+    }
+
+    // ? Linking Section
     const link = container.resolve("link");
     const logger = container.resolve("logger");
 
     const links: LinkDefinition[] = [];
 
     for (const product of products) {
-      // ? NOTE we cannot follow the product-created hook code structure because  we need to fetch the product detail
+      //  NOTE we cannot follow the product-created hook code structure because  we need to fetch the product detail
       const productDetail = await getProductDetailById({
         productId: product.id,
         container,
@@ -210,10 +283,31 @@ updateProductsWorkflow.hooks.productsUpdated(
         container,
       });
       if (bcProductInfoLink) links.push(bcProductInfoLink);
+
+      const productFileLinks = await handleProductFilesLinkUpdate({
+        productDetail,
+        additional_data,
+        container,
+      });
+      logger.info(
+        JSON.stringify(
+          { message: "this is the prouct file links", productFileLinks },
+          null,
+          2
+        )
+      );
+
+      if (productFileLinks) links.push(...productFileLinks);
     }
 
     await link.create(links);
-    logger.info(`Updated Product Link ${JSON.stringify(link, null, 2)}`);
+    logger.info(
+      `Updated Product Link ${JSON.stringify(
+        { fileIds: additional_data?.product_file_ids, links },
+        null,
+        2
+      )}`
+    );
     return new StepResponse(links, links); //? the second parameter is passed to the compensation function source: https://docs.medusajs.com/learn/customization/extend-features/extend-create-product#link-brand-to-product
   },
 
