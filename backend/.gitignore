@@ -29,3 +29,6 @@ build
  Files: 
 static/*.mov
 static/*.pdf
+static/*.jpg
+static/*.png
+static/*.webp

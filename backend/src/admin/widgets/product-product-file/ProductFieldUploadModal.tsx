@@ -1,16 +1,16 @@
-import { Button, FocusModal, Heading, Input, Label, Text } from "@medusajs/ui";
+import { Button, FocusModal, Heading, Text } from "@medusajs/ui";
 import {
   Dropzone,
   DropzoneFileStateType,
   DropzoneProps,
 } from "../../../../src/admin/components/common/Dropzone";
 import React from "react";
-import { AdminProduct } from "@medusajs/framework/types";
 import { useUpdateProductFiles } from "./useProductWithProductFile";
+import { AdminProductWithProductFiles } from "./types";
 
 interface ProductFileUploadModalProps
   extends React.ComponentProps<typeof FocusModal> {
-  product: AdminProduct;
+  product: AdminProductWithProductFiles;
 }
 
 export function ProductFileUploadModal({
@@ -19,6 +19,8 @@ export function ProductFileUploadModal({
 }: ProductFileUploadModalProps) {
   const updateProductMutation = useUpdateProductFiles();
   const [files, setFiles] = React.useState<DropzoneFileStateType>(null);
+
+  console.log("this is the product", product);
 
   return (
     <FocusModal {...props}>
@@ -30,7 +32,7 @@ export function ProductFileUploadModal({
                 updateProductMutation.mutate({
                   product,
                   files,
-                  alts: ["new file"],
+                  alts: [],
                 });
               }
             }}

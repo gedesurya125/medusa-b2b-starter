@@ -12,7 +12,7 @@ const ProductFileWidget = ({
 }: DetailWidgetProps<AdminProduct>) => {
   const [openFileUploadModal, setOpenFieldUploadModal] = React.useState(false);
 
-  const extendedResponse = useProductWithProductFile({ productId: product.id });
+  const productWithFiles = useProductWithProductFile({ productId: product.id });
 
   return (
     <>
@@ -23,12 +23,12 @@ const ProductFileWidget = ({
         }}
         onClickMenuEdit={() => {}}
       >
-        <FileTable productFiles={extendedResponse?.product_files} />
+        <FileTable productFiles={productWithFiles?.product_files} />
       </Container>
       <ProductFileUploadModal
         open={openFileUploadModal}
         onOpenChange={setOpenFieldUploadModal}
-        product={product}
+        product={productWithFiles}
       />
     </>
   );
