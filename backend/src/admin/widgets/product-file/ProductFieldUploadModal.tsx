@@ -3,7 +3,7 @@ import {
   Dropzone,
   DropzoneFileStateType,
   DropzoneProps,
-} from "../../../../src/admin/components/common/Dropzone";
+} from "../../components/common/Dropzone";
 import React from "react";
 import { useUpdateProductFiles } from "./useProductFiles";
 import { AdminProductWithProductFiles } from "./types";

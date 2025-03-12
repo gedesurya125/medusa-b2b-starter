@@ -3,7 +3,7 @@ import { Button, Table, Text } from "@medusajs/ui";
 import { Thumbnail } from "../../components";
 import { ProductFileType } from "./types";
 import { Trash } from "@medusajs/icons";
-import { Menu } from "../../../../src/admin/components/common/Container";
+import { Menu } from "../../components/common/Container";
 
 export const FileTable = ({
   productFiles,
