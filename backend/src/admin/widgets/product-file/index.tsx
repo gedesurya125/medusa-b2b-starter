@@ -17,24 +17,25 @@ const ProductFileWidget = ({
   return (
     <>
       <Container
-        title="Product Files"
+        title="Product Documentation"
         onClickMenuAdd={() => {
           setOpenFieldUploadModal(true);
         }}
       >
-        <FileTable productFiles={productWithFiles?.product_files} />
+        <FileTable product={productWithFiles} />
       </Container>
       <ProductFileUploadModal
         open={openFileUploadModal}
         onOpenChange={setOpenFieldUploadModal}
         product={productWithFiles}
+        accept={".pdf"}
       />
     </>
   );
 };
 
 export const config = defineWidgetConfig({
-  zone: "product.details.before",
+  zone: "product.details.side.after",
 });
 
 export default ProductFileWidget;

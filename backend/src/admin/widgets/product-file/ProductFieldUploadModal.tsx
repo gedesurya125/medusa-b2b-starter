@@ -11,16 +11,16 @@ import { AdminProductWithProductFiles } from "./types";
 interface ProductFileUploadModalProps
   extends React.ComponentProps<typeof FocusModal> {
   product: AdminProductWithProductFiles;
+  accept: string;
 }
 
 export function ProductFileUploadModal({
   product,
+  accept,
   ...props
 }: ProductFileUploadModalProps) {
   const updateProductMutation = useUpdateProductFiles();
   const [files, setFiles] = React.useState<DropzoneFileStateType>(null);
-
-  console.log("this is the product", product);
 
   return (
     <FocusModal {...props}>
@@ -41,14 +41,14 @@ export function ProductFileUploadModal({
           </Button>
         </FocusModal.Header>
         <FocusModal.Body className="flex flex-col items-center py-16">
-          <Content files={files} setFiles={setFiles} />
+          <Content files={files} setFiles={setFiles} accept={accept} />
         </FocusModal.Body>
       </FocusModal.Content>
     </FocusModal>
   );
 }
 
-const Content = ({ files, setFiles }: DropzoneProps) => {
+const Content = ({ files, setFiles, accept }: DropzoneProps) => {
   return (
     <div className="flex w-full max-w-lg flex-col gap-y-8">
       <div className="flex flex-col gap-y-1">
@@ -56,7 +56,7 @@ const Content = ({ files, setFiles }: DropzoneProps) => {
         <Text className="text-ui-fg-subtle">The product documentation</Text>
       </div>
       <div className="flex flex-col gap-y-2">
-        <Dropzone files={files} setFiles={setFiles} />
+        <Dropzone files={files} setFiles={setFiles} accept={accept} />
       </div>
     </div>
   );

@@ -71,8 +71,8 @@ export function Menu({
         )}
         {onClickMenuDelete && (
           <>
-            <DropdownMenu.Separator onClick={onClickMenuDelete} />
-            <DropdownMenu.Item className="gap-x-2">
+            <DropdownMenu.Separator />
+            <DropdownMenu.Item className="gap-x-2" onClick={onClickMenuDelete}>
               <Trash className="text-ui-fg-subtle" />
               Delete
             </DropdownMenu.Item>

@@ -1,14 +1,14 @@
-import { Button, Table, Text } from "@medusajs/ui";
+import { Table } from "@medusajs/ui";
 
 import { Thumbnail } from "../../components";
-import { ProductFileType } from "./types";
-import { Trash } from "@medusajs/icons";
+import { AdminProductWithProductFiles, ProductFileType } from "./types";
 import { Menu } from "../../components/common/Container";
+import { useDeleteProductFile } from "./useProductFiles";
 
 export const FileTable = ({
-  productFiles,
+  product,
 }: {
-  productFiles: ProductFileType[];
+  product: AdminProductWithProductFiles;
 }) => {
   return (
     <Table>
@@ -21,12 +21,13 @@ export const FileTable = ({
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {productFiles?.map((productFileItem, index) => {
+        {product?.product_files?.map((productFileItem, index) => {
           return (
             <FileTableRow
               key={index}
               index={index}
               productFile={productFileItem}
+              product={product}
             />
           );
         })}
@@ -38,10 +39,14 @@ export const FileTable = ({
 const FileTableRow = ({
   productFile,
   index,
+  product,
 }: {
   productFile: ProductFileType;
   index: number;
+  product: AdminProductWithProductFiles;
 }) => {
+  const deleteProductFileMutation = useDeleteProductFile();
+
   return (
     <Table.Row>
       <Table.Cell>{index + 1}</Table.Cell>
@@ -50,7 +55,15 @@ const FileTableRow = ({
       </Table.Cell>
       <Table.Cell className="w-full">{productFile.alt}</Table.Cell>
       <Table.Cell>
-        <Menu onClickMenuEdit={() => {}} onClickMenuDelete={() => {}} />
+        <Menu
+          onClickMenuEdit={() => {}}
+          onClickMenuDelete={() => {
+            deleteProductFileMutation.mutate({
+              product,
+              deletedProductId: productFile.id,
+            });
+          }}
+        />
       </Table.Cell>
     </Table.Row>
   );

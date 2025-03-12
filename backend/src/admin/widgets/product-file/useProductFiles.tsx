@@ -14,6 +14,29 @@ interface UseProductWithProductFileParamsType {
   productId: string;
 }
 
+const updateProductFiles = async ({
+  productId,
+  productFileIds,
+}: {
+  productId: string;
+  productFileIds: string[];
+}) => {
+  const updatedProduct = await sdk.client.fetch<{
+    product: AdminProductWithProductFiles;
+  }>(`/admin/products/${productId}?fields=+product_files.*`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: {
+      additional_data: {
+        product_file_ids: productFileIds,
+      },
+    },
+  });
+  return updatedProduct;
+};
+
 // TODO: use this productQueryKey in another widget related to the product
 const productsQueryKey = queryKeysFactory("products");
 
@@ -73,26 +96,16 @@ export const useUpdateProductFiles = () => {
 
         console.log("this is the oldLinkedProductIds", oldLinkedProductsIds);
 
-        const updatedProduct = await sdk.client.fetch<{ product: Product }>(
-          `/admin/products/${product.id}?fields=+bc_product_info.*,+brand.*,+product_files.*`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: {
-              additional_data: {
-                product_file_ids: [
-                  ...uploadedFiles.files.map(
-                    (fileItem: ProductFileType) => fileItem.id
-                  ),
-                  ...oldLinkedProductsIds,
-                ],
-              },
-            },
-          }
-        );
-        return { updatedProduct, product };
+        const updatedProduct = await updateProductFiles({
+          productId: product.id,
+          productFileIds: [
+            ...uploadedFiles.files.map(
+              (fileItem: ProductFileType) => fileItem.id
+            ),
+            ...oldLinkedProductsIds,
+          ],
+        });
+        return { uploadedFiles, updatedProduct };
       }
     },
     onSuccess: (data, variables, context) => {
@@ -102,6 +115,48 @@ export const useUpdateProductFiles = () => {
     },
     onError: (error, variables, context) => {
       // TODO: handle error and handle roll back eg: undoing the file upload if the product update failed
+    },
+  });
+
+  return mutation;
+};
+
+export const useDeleteProductFile = () => {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: async ({
+      product,
+      deletedProductId,
+    }: {
+      product: AdminProductWithProductFiles;
+      deletedProductId: string;
+    }) => {
+      const isFileToBeDeletedLinkedToProduct =
+        product.product_files.findIndex(
+          (productFileItem) => productFileItem.id === deletedProductId
+        ) !== -1;
+
+      if (!isFileToBeDeletedLinkedToProduct) return null;
+
+      const remainingLinkedFileIds = product.product_files
+        .filter((product) => product.id !== deletedProductId)
+        .map((product) => product.id);
+
+      const updatedProductFiles = await updateProductFiles({
+        productId: product.id,
+        productFileIds: remainingLinkedFileIds,
+      });
+
+      return { remainingLinkedFileIds, updatedProductFiles };
+    },
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({
+        queryKey: productsQueryKey.detail(variables.product.id),
+      });
+    },
+    onError: (error, variables, context) => {
+      // TODO: handle error
     },
   });
 

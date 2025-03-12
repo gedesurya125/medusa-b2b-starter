@@ -7,9 +7,10 @@ export type DropzoneFileStateType = FileList | null;
 export interface DropzoneProps {
   files: DropzoneFileStateType;
   setFiles: React.Dispatch<React.SetStateAction<DropzoneFileStateType>>;
+  accept?: string;
 }
 
-export const Dropzone = ({ files, setFiles }: DropzoneProps) => {
+export const Dropzone = ({ files, setFiles, accept }: DropzoneProps) => {
   //? source: https://medium.com/@aren.talb00/creating-a-custom-file-input-using-react-and-useref-233f5d4abfc9
 
   console.log("this is the file value");
@@ -65,6 +66,7 @@ export const Dropzone = ({ files, setFiles }: DropzoneProps) => {
         onChange={updateFile}
         className="hidden"
         multiple
+        accept={accept}
       />
     </label>
   );
