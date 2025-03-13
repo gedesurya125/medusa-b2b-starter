@@ -4,6 +4,7 @@ import { adminQuotesMiddlewares } from "./quotes/middlewares";
 import { adminApprovalsMiddlewares } from "./approvals/middlewares";
 import { bcProductInfoMiddlewares } from "./bc-product-info/middlewares";
 import { productFileMiddlewares } from "./product-file/middlewares";
+import { salesRefMiddlewares } from "./sales-ref/middlewares";
 
 export const adminMiddlewares: MiddlewareRoute[] = [
   ...adminCompaniesMiddlewares,
@@ -11,4 +12,5 @@ export const adminMiddlewares: MiddlewareRoute[] = [
   ...adminApprovalsMiddlewares,
   ...bcProductInfoMiddlewares,
   ...productFileMiddlewares,
+  ...salesRefMiddlewares,
 ];
