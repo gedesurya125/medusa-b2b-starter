@@ -8,6 +8,7 @@ import { DropdownMenu, IconButton } from "@medusajs/ui";
 
 interface ContainerProps extends MenuProps {
   title: string;
+  contentCollapse?: boolean;
   children?: React.ReactNode;
 }
 
@@ -17,6 +18,7 @@ export const Container = ({
   onClickMenuEdit,
   children,
   title,
+  contentCollapse,
 }: ContainerProps) => {
   return (
     <MedusaContainer className="divide-y p-0">
@@ -30,7 +32,11 @@ export const Container = ({
           onClickMenuDelete={onClickMenuDelete}
         />
       </div>
-      <div className={clx(`text-ui-fg-subtle items-center px-6 py-4`)}>
+      <div
+        className={clx(`text-ui-fg-subtle items-center py-4`, {
+          "px-6": !contentCollapse,
+        })}
+      >
         {children}
       </div>
     </MedusaContainer>

@@ -3,6 +3,10 @@ import { ModuleSalesRef } from "./module";
 
 export interface SalesRefFilterParams extends FindParams {}
 
-export type SalesRefResponse = PaginatedResponse<{
+export type SalesRefsResponse = PaginatedResponse<{
   salesRefs: ModuleSalesRef[];
 }>;
+
+export type SalesRefResponse = {
+  salesRef: ModuleSalesRef;
+};

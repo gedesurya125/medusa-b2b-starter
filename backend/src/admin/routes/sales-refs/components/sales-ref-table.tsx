@@ -42,7 +42,7 @@ export const SalesRefTable = () => {
         columns={columns}
         table={table}
         pagination
-        navigateTo={(row) => `/sales-ref/${row.original.id}`}
+        navigateTo={(row) => `/sales-refs/${row.original.id}`}
         filters={filters}
         count={count}
         search

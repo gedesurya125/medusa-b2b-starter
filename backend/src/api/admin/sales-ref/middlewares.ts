@@ -25,4 +25,13 @@ export const salesRefMiddlewares: MiddlewareRoute[] = [
       }),
     ],
   },
+  {
+    matcher: "/admin/sales-ref/:id",
+    method: "GET",
+    middlewares: [
+      validateAndTransformQuery(GetSalesRefSchema, {
+        defaults: ["id", "name", "password", "username", "bc_sales_code"],
+      }),
+    ],
+  },
 ];
