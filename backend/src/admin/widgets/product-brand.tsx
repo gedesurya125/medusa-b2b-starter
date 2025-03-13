@@ -114,7 +114,6 @@ const EditButton = ({ product }: { product: AdminProduct }) => {
         },
       }
     );
-    console.log("this is the updated product", updatedProduct);
 
     return updatedProduct;
   };
@@ -159,10 +158,6 @@ const EditDrawerBody = ({
   brandOptions?: Brand[];
   handleChange?: (e: any) => void;
 }) => {
-  // const { data } = useBrands({ limit: 20, offset: 0 });
-
-  console.log("this is the selected brand", selectedBrand);
-
   return (
     <>
       <Select

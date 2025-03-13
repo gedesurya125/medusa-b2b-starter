@@ -18,8 +18,6 @@ const SalesRefDetail = () => {
 
   const { salesRef } = useSalesRef(salesRefId || "");
 
-  console.log("this is the single sales ref", salesRef);
-
   return (
     <div className="flex flex-col gap-y-3">
       <Container

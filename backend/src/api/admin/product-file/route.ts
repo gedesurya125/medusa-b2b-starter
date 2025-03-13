@@ -19,8 +19,6 @@ export async function POST(
   const files = req?.files as Express.Multer.File[];
 
   if (!files?.length) {
-    console.log("this is the files", files);
-
     throw new MedusaError(
       MedusaError.Types.INVALID_DATA,
       "No files were uploaded"

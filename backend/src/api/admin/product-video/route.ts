@@ -21,8 +21,6 @@ export async function POST(
   const videoFiles = req?.files as Express.Multer.File[];
 
   if (!videoFiles?.length) {
-    console.log("this is the video", videoFiles);
-
     throw new MedusaError(
       MedusaError.Types.INVALID_DATA,
       "No video were uploaded"

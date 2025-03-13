@@ -34,8 +34,6 @@ export const SalesRefTable = () => {
     pageSize: PAGE_SIZE,
   });
 
-  console.log("this is the sales refs", salesRefs);
-
   return (
     <div className="flex size-full flex-col overflow-hidden">
       <DataTable

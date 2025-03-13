@@ -16,7 +16,6 @@ import {
 } from "@tanstack/react-query";
 import { ClientHeaders, FetchError } from "@medusajs/js-sdk";
 import { quoteQueryKey } from "./quotes";
-import { AdminCrateSalesRefParamsType } from "../../../api/admin/sales-ref/validator";
 
 export const salesRefQueryKey = queryKeysFactory("sales_ref");
 

@@ -28,7 +28,6 @@ export function SalesRefAddDrawer({
   });
 
   const handleSubmit = form.handleSubmit(async (data) => {
-    console.log("this is the submited data", data);
     await createSalesRefMutation.mutateAsync(
       {
         name: data.name,
@@ -145,7 +144,6 @@ const DrawerBody = () => {
   });
 
   const handleSubmit = form.handleSubmit(async (data) => {
-    console.log("this is the submited data", data);
     await createSalesRefMutation.mutateAsync(
       {
         name: data.name,
