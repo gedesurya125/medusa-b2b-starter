@@ -13,8 +13,6 @@ export interface DropzoneProps {
 export const Dropzone = ({ files, setFiles, accept }: DropzoneProps) => {
   //? source: https://medium.com/@aren.talb00/creating-a-custom-file-input-using-react-and-useref-233f5d4abfc9
 
-  console.log("this is the file value");
-
   const handleDragOver = (event: React.DragEvent<HTMLLabelElement>) => {
     event.preventDefault();
   };
@@ -33,8 +31,6 @@ export const Dropzone = ({ files, setFiles, accept }: DropzoneProps) => {
       setFiles(files);
     }
   };
-
-  console.log("this is the file", files);
 
   return (
     <label

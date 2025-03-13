@@ -94,8 +94,6 @@ export const useUpdateProductFiles = () => {
             (existingProduct) => existingProduct?.id
           ) || [];
 
-        console.log("this is the oldLinkedProductIds", oldLinkedProductsIds);
-
         const updatedProduct = await updateProductFiles({
           productId: product.id,
           productFileIds: [
