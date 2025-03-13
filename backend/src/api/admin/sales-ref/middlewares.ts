@@ -20,7 +20,7 @@ export const salesRefMiddlewares: MiddlewareRoute[] = [
     middlewares: [
       validateAndTransformQuery(GetSalesRefSchema, {
         // TODO: remove the password latter
-        defaults: ["id", "name", "password", "bc_sales_code"],
+        defaults: ["id", "name", "password", "username", "bc_sales_code"],
         isList: true,
       }),
     ],

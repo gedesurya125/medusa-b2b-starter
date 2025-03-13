@@ -6,7 +6,6 @@ import { z } from "zod";
 
 import { AdminCreateSalesRefType } from "./validator";
 import { createSalesRefWorkflow } from "src/workflows/sales-ref/workflows/create-sales-ref";
-import { SALES_REF_MODULE } from "src/modules/sales-ref";
 
 type PostAdminCreateBrandType = z.infer<typeof AdminCreateSalesRefType>;
 
@@ -26,14 +25,14 @@ export const POST = async (
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const query = req.scope.resolve("query");
 
-  const { data: salesRef, metadata: { count, take, skip } = {} } =
+  const { data: salesRefs, metadata: { count, take, skip } = {} } =
     await query.graph({
-      entity: SALES_REF_MODULE,
+      entity: "sales_refs",
       ...req.queryConfig, // this property hold for the pagination
     });
 
   res.json({
-    brands: salesRef,
+    salesRefs,
     count,
     limit: take,
     offset: skip,
