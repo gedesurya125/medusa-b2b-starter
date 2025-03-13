@@ -5,6 +5,7 @@ import { loadEnv, defineConfig, Modules } from "@medusajs/framework/utils";
 import { BRAND_MODULE } from "./src/modules/brand";
 import { BC_PRODUCT_INFO_MODULE } from "src/modules/bcProductInfo";
 import { PRODUCT_FILE_MODULE } from "src/modules/product-file";
+import { PRODUCT_VIDEO_MODULE } from "src/modules/product-video";
 
 loadEnv(process.env.NODE_ENV!, process.cwd());
 
@@ -46,6 +47,9 @@ module.exports = defineConfig({
     },
     [PRODUCT_FILE_MODULE]: {
       resolve: "./src/modules/product-file",
+    },
+    [PRODUCT_VIDEO_MODULE]: {
+      resolve: "./src/modules/product-video",
     },
   },
 });

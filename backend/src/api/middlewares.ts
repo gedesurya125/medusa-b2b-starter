@@ -49,6 +49,7 @@ export default defineMiddlewares({
         brand_id: z.string().optional(),
         bc_product_info_id: z.string().optional(),
         product_file_ids: z.string().array().optional(),
+        product_video_ids: z.string().array().optional(),
       },
     },
     // Product Update
@@ -60,6 +61,7 @@ export default defineMiddlewares({
         brand_id: z.string().optional(),
         bc_product_info_id: z.string().optional(),
         product_file_ids: z.string().array().optional(),
+        product_video_ids: z.string().array().optional(),
       },
     },
 
