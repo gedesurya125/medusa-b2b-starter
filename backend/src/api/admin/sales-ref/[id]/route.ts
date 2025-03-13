@@ -4,10 +4,13 @@ import type {
   MedusaResponse,
 } from "@medusajs/framework";
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
-import { AdminGetSalesRefParamsType } from "../validator";
+import {
+  AdminGetSalesRefParamsType,
+  AdminUpdateSalesRefParamsType,
+} from "../validator";
 import { deleteSalesRefWorkflow } from "src/workflows/sales-ref/workflows/delete-sales-ref";
-import { object } from "prop-types";
 
+// ? Get specific sales ref
 export const GET = async (
   req: MedusaRequest<AdminGetSalesRefParamsType>,
   res: MedusaResponse
@@ -29,6 +32,7 @@ export const GET = async (
   res.json({ salesRef });
 };
 
+// ? Delete single sales ref
 export const DELETE = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse
@@ -47,4 +51,14 @@ export const DELETE = async (
     deleted: true,
     result,
   });
+};
+
+export const POST = async (
+  req: AuthenticatedMedusaRequest<AdminUpdateSalesRefParamsType>,
+  res: MedusaResponse
+) => {
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
+  const { id } = req.params;
+
+  // put the update sales ref workflow here
 };

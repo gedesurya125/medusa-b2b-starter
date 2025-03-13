@@ -24,3 +24,14 @@ export const AdminGetSalesRefParams = createFindParams({
   })
 );
 export type AdminGetSalesRefParamsType = z.infer<typeof AdminGetSalesRefParams>;
+
+export const AdminUpdateSalesRefParams = z.object({
+  name: z.string().optional(),
+  username: z.string().optional(),
+  password: z.string().optional(),
+  bc_sales_code: z.string().optional(),
+});
+
+export type AdminUpdateSalesRefParamsType = z.infer<
+  typeof AdminUpdateSalesRefParams
+>;

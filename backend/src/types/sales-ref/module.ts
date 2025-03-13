@@ -19,3 +19,7 @@ export type ModuleCreateSalesRef = {
 export type ModuleDeleteSalesRef = {
   id: string;
 };
+
+export type ModuleUpdateSalesRef = {
+  id: string;
+};

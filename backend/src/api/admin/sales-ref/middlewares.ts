@@ -2,17 +2,24 @@ import {
   MiddlewareRoute,
   validateAndTransformBody,
   validateAndTransformQuery,
+  defineMiddlewares,
 } from "@medusajs/framework";
 import { AdminCreateSalesRefParams } from "./validator";
 import { createFindParams } from "@medusajs/medusa/api/utils/validators";
+import z from "zod";
 
 export const GetSalesRefSchema = createFindParams();
 
-export const salesRefMiddlewares: MiddlewareRoute[] = [
+export const salesRefMiddlewares: (MiddlewareRoute & {
+  additionalDataValidators?: z.ZodRawShape;
+})[] = [
   {
     matcher: "/admin/sales-ref",
     method: ["POST"],
     middlewares: [validateAndTransformBody(AdminCreateSalesRefParams)],
+    additionalDataValidators: {
+      company_id: z.string().optional(),
+    },
   },
   {
     matcher: "/admin/sales-ref",
