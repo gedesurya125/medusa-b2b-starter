@@ -106,7 +106,7 @@ export const useCreateSalesRef = (
 };
 
 export const useDeleteSalesRef = (
-  options?: UseMutationOptions<void, FetchError>
+  options?: UseMutationOptions<string, FetchError, string>
 ) => {
   const queryClient = useQueryClient();
 
