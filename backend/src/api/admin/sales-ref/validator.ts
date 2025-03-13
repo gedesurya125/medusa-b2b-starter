@@ -2,14 +2,16 @@
 import { createFindParams } from "@medusajs/medusa/api/utils/validators";
 import { optional, z } from "zod";
 
-export const AdminCreateSalesRefType = z.object({
+export const AdminCreateSalesRefParams = z.object({
   name: z.string(),
   username: z.string(),
   password: z.string(),
   bc_sales_code: z.string().optional(),
 });
+export type AdminCrateSalesRefParamsType = z.infer<
+  typeof AdminCreateSalesRefParams
+>;
 
-export type AdminGetSalesRefParamsType = z.infer<typeof AdminGetSalesRefParams>;
 export const AdminGetSalesRefParams = createFindParams({
   limit: 15,
   offset: 0,
@@ -21,3 +23,4 @@ export const AdminGetSalesRefParams = createFindParams({
     bc_sales_code: z.string().optional(),
   })
 );
+export type AdminGetSalesRefParamsType = z.infer<typeof AdminGetSalesRefParams>;

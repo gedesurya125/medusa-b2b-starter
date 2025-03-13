@@ -3,7 +3,7 @@ import {
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework";
-import { AdminCreateSalesRefType } from "./validator";
+import { AdminCreateSalesRefParams } from "./validator";
 import { createFindParams } from "@medusajs/medusa/api/utils/validators";
 
 export const GetSalesRefSchema = createFindParams();
@@ -12,7 +12,7 @@ export const salesRefMiddlewares: MiddlewareRoute[] = [
   {
     matcher: "/admin/sales-ref",
     method: ["POST"],
-    middlewares: [validateAndTransformBody(AdminCreateSalesRefType)],
+    middlewares: [validateAndTransformBody(AdminCreateSalesRefParams)],
   },
   {
     matcher: "/admin/sales-ref",

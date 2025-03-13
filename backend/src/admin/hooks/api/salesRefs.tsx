@@ -4,10 +4,19 @@ import {
   SalesRefsResponse,
   SalesRefFilterParams,
   SalesRefResponse,
+  AdminCreateSalesRef,
 } from "../../../types/sales-ref";
-import { QueryKey, useQuery, UseQueryOptions } from "@tanstack/react-query";
+import {
+  QueryKey,
+  useMutation,
+  UseMutationOptions,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from "@tanstack/react-query";
 import { ClientHeaders, FetchError } from "@medusajs/js-sdk";
 import { quoteQueryKey } from "./quotes";
+import { AdminCrateSalesRefParamsType } from "../../../api/admin/sales-ref/validator";
 
 export const salesRefQueryKey = queryKeysFactory("sales_ref");
 
@@ -66,4 +75,33 @@ export const useSalesRef = (
   });
 
   return { ...data, rest };
+};
+
+export const useCreateSalesRef = (
+  options?: UseMutationOptions<
+    SalesRefResponse,
+    FetchError,
+    AdminCreateSalesRef
+  >
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (salesRef: AdminCreateSalesRef) => {
+      return await sdk.client.fetch("/admin/sales-ref", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: salesRef,
+      });
+    },
+    onSuccess: (data: any, variables: any, context: any) => {
+      queryClient.invalidateQueries({ queryKey: salesRefQueryKey.list() });
+      queryClient.invalidateQueries({
+        queryKey: salesRefQueryKey.detail(data.id),
+      });
+      options?.onSuccess?.(data, variables, context);
+    },
+    ...options,
+  });
 };

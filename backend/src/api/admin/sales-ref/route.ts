@@ -4,10 +4,10 @@ import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { createBrandWorkflow } from "../../../workflows/brand/workflows/create-brand";
 import { z } from "zod";
 
-import { AdminCreateSalesRefType } from "./validator";
+import { AdminCreateSalesRefParams } from "./validator";
 import { createSalesRefWorkflow } from "src/workflows/sales-ref/workflows/create-sales-ref";
 
-type PostAdminCreateBrandType = z.infer<typeof AdminCreateSalesRefType>;
+type PostAdminCreateBrandType = z.infer<typeof AdminCreateSalesRefParams>;
 
 export const POST = async (
   req: MedusaRequest<PostAdminCreateBrandType>,

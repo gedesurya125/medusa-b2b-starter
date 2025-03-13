@@ -10,3 +10,10 @@ export type SalesRefsResponse = PaginatedResponse<{
 export type SalesRefResponse = {
   salesRef: ModuleSalesRef;
 };
+
+export type AdminCreateSalesRef = {
+  name: string;
+  username: string;
+  password: string;
+  bc_sales_code: string | null;
+};
