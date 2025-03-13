@@ -105,3 +105,23 @@ export const useCreateSalesRef = (
     ...options,
   });
 };
+
+export const useDeleteSalesRef = (
+  options?: UseMutationOptions<void, FetchError>
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (salesRefId: string) =>
+      sdk.client.fetch(`/admin/sales-ref/${salesRefId}`, {
+        method: "DELETE",
+      }),
+    onSuccess: (data: any, variables: any, context: any) => {
+      queryClient.invalidateQueries({
+        queryKey: salesRefQueryKey.list(),
+      });
+      options?.onSuccess?.(data, variables, context);
+    },
+    ...options,
+  });
+};

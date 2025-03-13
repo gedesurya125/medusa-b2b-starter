@@ -1,10 +1,20 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Container } from "../../../components/common/Container";
-import { useSalesRef } from "../../../../admin/hooks/api/salesRefs";
-import { Text } from "@medusajs/ui";
+import {
+  useDeleteSalesRef,
+  useSalesRef,
+} from "../../../../admin/hooks/api/salesRefs";
+import { Text, toast, useToggleState } from "@medusajs/ui";
+import { DeletePrompt } from "../components/table/delete-prompt";
 
 const SalesRefDetail = () => {
   const { salesRefId } = useParams();
+  const navigate = useNavigate();
+
+  const deleteSalesRefMutation = useDeleteSalesRef();
+
+  const [isPromptOpen, openPrompt, closePrompt, togglePrompt] =
+    useToggleState();
 
   const { salesRef } = useSalesRef(salesRefId || "");
 
@@ -12,7 +22,12 @@ const SalesRefDetail = () => {
 
   return (
     <div className="flex flex-col gap-y-3">
-      <Container title={`Sales Detail`} contentCollapse>
+      <Container
+        title={`Sales Detail`}
+        contentCollapse
+        onClickMenuDelete={openPrompt}
+        onClickMenuEdit={() => {}}
+      >
         <ul className="list-none">
           <ListItem label="#id" value={salesRef?.id || ""} />
           <ListItem label="name" value={salesRef?.name || ""} />
@@ -23,6 +38,18 @@ const SalesRefDetail = () => {
             value={salesRef?.bc_sales_code || ""}
           />
         </ul>
+        <DeletePrompt
+          open={isPromptOpen}
+          onOpenChange={togglePrompt}
+          handleDelete={() => {
+            deleteSalesRefMutation.mutate(salesRefId, {
+              onSuccess: () => {
+                toast.success("Sales ref has been deleted");
+                navigate("../");
+              },
+            });
+          }}
+        />
       </Container>
       <Container title={`Assigned Companies`}></Container>
     </div>

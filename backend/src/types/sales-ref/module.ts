@@ -15,3 +15,7 @@ export type ModuleCreateSalesRef = {
   password: string;
   bc_sales_code?: string;
 };
+
+export type ModuleDeleteSalesRef = {
+  id: string;
+};
