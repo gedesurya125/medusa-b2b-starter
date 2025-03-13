@@ -9,8 +9,8 @@ export const useSalesRefTableColumns = () => {
   return useMemo(
     () => [
       columnHelper.accessor("id", {
-        header: "ID",
-        cell: ({ getValue }) => <TextCell text={`#${getValue()}`} />,
+        header: "id",
+        cell: ({ getValue }) => <TextCell text={getValue()} />,
       }),
       columnHelper.accessor("name", {
         header: "Name",

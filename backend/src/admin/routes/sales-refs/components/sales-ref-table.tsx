@@ -6,7 +6,7 @@ import { useSalesRefTableFilters } from "./table/filters";
 import { useSalesRefTableQuery } from "./table/query";
 
 const PAGE_SIZE = 50;
-const PREFIX = "quo";
+const PREFIX = "sales-ref";
 
 export const SalesRefTable = () => {
   const { searchParams, raw } = useSalesRefTableQuery({
@@ -51,9 +51,8 @@ export const SalesRefTable = () => {
         orderBy={["id", "created_at"]}
         queryObject={raw}
         noRecords={{
-          title: "No quotes found",
-          message:
-            "There are currently no quotes. Create one from the storefront.",
+          title: "No sales refs found",
+          message: "There are currently no sales refs.",
         }}
       />
     </div>
