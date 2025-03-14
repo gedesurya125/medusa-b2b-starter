@@ -19,7 +19,6 @@ import { quoteQueryKey } from "./quotes";
 
 export const salesRefQueryKey = queryKeysFactory("sales_ref");
 
-// TODO: don't use any type
 export const useSalesRefs = (
   query: SalesRefFilterParams,
   options?: UseQueryOptions<
