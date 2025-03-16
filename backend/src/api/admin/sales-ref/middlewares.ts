@@ -4,7 +4,10 @@ import {
   validateAndTransformQuery,
   defineMiddlewares,
 } from "@medusajs/framework";
-import { AdminCreateSalesRefParams } from "./validator";
+import {
+  AdminAddCompanyToSalesRef,
+  AdminCreateSalesRefParams,
+} from "./validator";
 import { createFindParams } from "@medusajs/medusa/api/utils/validators";
 import z from "zod";
 
@@ -40,5 +43,10 @@ export const salesRefMiddlewares: (MiddlewareRoute & {
         defaults: ["id", "name", "password", "username", "bc_sales_code"],
       }),
     ],
+  },
+  {
+    matcher: "/admin/sales-ref/:id/companies",
+    method: ["POST"],
+    middlewares: [validateAndTransformBody(AdminAddCompanyToSalesRef)],
   },
 ];

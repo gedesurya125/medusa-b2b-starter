@@ -52,13 +52,3 @@ export const DELETE = async (
     result,
   });
 };
-
-export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateSalesRefParamsType>,
-  res: MedusaResponse
-) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
-  const { id } = req.params;
-
-  // put the update sales ref workflow here
-};

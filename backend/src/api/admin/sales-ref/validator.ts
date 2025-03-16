@@ -35,3 +35,10 @@ export const AdminUpdateSalesRefParams = z.object({
 export type AdminUpdateSalesRefParamsType = z.infer<
   typeof AdminUpdateSalesRefParams
 >;
+
+export const AdminAddCompanyToSalesRef = z.object({
+  company_id: z.string(),
+});
+export type AdminAddCompanyToSalesRefType = z.infer<
+  typeof AdminAddCompanyToSalesRef
+>;
