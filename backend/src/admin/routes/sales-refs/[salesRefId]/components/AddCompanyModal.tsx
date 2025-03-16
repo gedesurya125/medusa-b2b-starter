@@ -1,18 +1,16 @@
 import { Button, FocusModal, Heading, Input, Label, Text } from "@medusajs/ui";
 import { useCompanies } from "../../../../../../src/admin/hooks/api";
 import { BriefCompanyTable, BriefCompanyTableProps } from "./BriefCompanyTable";
+import { useAddCompanyToSalesRef } from "../../../../../../src/admin/hooks/api/salesRefs";
+import { ModuleSalesRef, SalesRefWithLinkedCompanies } from "@starter/types";
 
 interface AddCompanyModalProps extends React.ComponentProps<typeof FocusModal> {
-  linkedCompanies: BriefCompanyTableProps["companies"];
+  salesRef: SalesRefWithLinkedCompanies;
 }
 
-export function AddCompanyModal({
-  linkedCompanies,
-  ...props
-}: AddCompanyModalProps) {
+export function AddCompanyModal({ salesRef, ...props }: AddCompanyModalProps) {
   const { data, isPending } = useCompanies();
-
-  console.log("this is the linked companies", linkedCompanies);
+  const addCompanyToSalesRef = useAddCompanyToSalesRef();
 
   return (
     <FocusModal {...props}>
@@ -32,12 +30,13 @@ export function AddCompanyModal({
           <BriefCompanyTable
             companies={data?.companies
               .filter((companyItem) => {
-                const isCurrentCompanyLinkedAlready = linkedCompanies
-                  ? linkedCompanies?.findIndex(
-                      (linkedCompanyItem) =>
-                        linkedCompanyItem.id === companyItem.id
-                    ) !== -1
-                  : false;
+                const isCurrentCompanyLinkedAlready =
+                  salesRef?.companies?.length > 0
+                    ? salesRef?.companies?.findIndex(
+                        (linkedCompanyItem) =>
+                          linkedCompanyItem.id === companyItem.id
+                      ) !== -1
+                    : false;
 
                 return !isCurrentCompanyLinkedAlready;
               })
@@ -50,8 +49,11 @@ export function AddCompanyModal({
                 currency_code: companyItem.currency_code,
                 logo_url: companyItem.logo_url,
               }))}
-            onClickRowAddButton={(company) => {
-              console.log("this is the company to add", company);
+            onClickRowAddButton={async (company) => {
+              await addCompanyToSalesRef.mutateAsync({
+                companyId: company.id,
+                salesRefId: salesRef.id,
+              });
             }}
           />
         </FocusModal.Body>

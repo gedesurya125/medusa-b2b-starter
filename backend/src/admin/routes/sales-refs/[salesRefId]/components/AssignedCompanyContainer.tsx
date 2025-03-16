@@ -4,11 +4,14 @@ import { Table, Text, useToggleState } from "@medusajs/ui";
 import { CompanyDTO } from "src/modules/company/types/common";
 import { AddCompanyModal } from "./AddCompanyModal";
 import { BriefCompanyTable } from "./BriefCompanyTable";
+import { SalesRefWithLinkedCompanies } from "@starter/types";
 
 export const AssignedCompanyContainer = ({
   companies,
+  salesRef,
 }: {
   companies?: CompanyDTO[];
+  salesRef: SalesRefWithLinkedCompanies;
 }) => {
   const [
     isAddCompanyModalOpen,
@@ -26,7 +29,7 @@ export const AssignedCompanyContainer = ({
       <AddCompanyModal
         open={isAddCompanyModalOpen}
         onOpenChange={toggleOpenAddCompanyModal}
-        linkedCompanies={companies}
+        salesRef={salesRef}
       />
     </Container>
   );

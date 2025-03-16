@@ -17,6 +17,7 @@ import {
 } from "@tanstack/react-query";
 import { ClientHeaders, FetchError } from "@medusajs/js-sdk";
 import { quoteQueryKey } from "./quotes";
+import { companyQueryKey } from "./companies";
 
 export const salesRefQueryKey = queryKeysFactory("sales_ref");
 
@@ -122,6 +123,50 @@ export const useDeleteSalesRef = (
       queryClient.invalidateQueries({
         queryKey: salesRefQueryKey.list(),
       });
+      options?.onSuccess?.(data, variables, context);
+    },
+    ...options,
+  });
+};
+
+type AddCompanyToSalesRefParams = {
+  salesRefId: string;
+  companyId: string;
+};
+
+export const useAddCompanyToSalesRef = (
+  options?: UseMutationOptions<unknown, FetchError, AddCompanyToSalesRefParams>
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      salesRefId,
+      companyId,
+    }: {
+      salesRefId: string;
+      companyId: string;
+    }) =>
+      sdk.client.fetch(`/admin/sales-ref/${salesRefId}/companies`, {
+        method: "POST",
+        body: {
+          company_id: companyId,
+        },
+      }),
+    onSuccess: (
+      data: any,
+      variables: AddCompanyToSalesRefParams,
+      context: any
+    ) => {
+      // ! FIXME: the invalidation is not working
+
+      queryClient.invalidateQueries({
+        queryKey: salesRefQueryKey.list(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: salesRefQueryKey.detail(variables.salesRefId),
+      });
+
       options?.onSuccess?.(data, variables, context);
     },
     ...options,

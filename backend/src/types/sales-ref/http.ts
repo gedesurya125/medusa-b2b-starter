@@ -12,10 +12,12 @@ export type SalesRefResponse = {
   salesRef: ModuleSalesRef;
 };
 
+export interface SalesRefWithLinkedCompanies extends ModuleSalesRef {
+  companies: CompanyDTO[];
+}
+
 export type SalesRefResponseWithLinkedCompanies = {
-  salesRef: ModuleSalesRef & {
-    companies: CompanyDTO[];
-  };
+  salesRef: SalesRefWithLinkedCompanies;
 };
 
 export type AdminCreateSalesRef = {

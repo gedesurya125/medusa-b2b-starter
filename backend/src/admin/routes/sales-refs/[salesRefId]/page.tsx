@@ -19,6 +19,8 @@ const SalesRefDetail = () => {
 
   const { salesRef } = useSalesRef(salesRefId || "");
 
+  if (!salesRef) return null;
+
   console.log("this is the fetched sales ref", salesRef);
 
   return (
@@ -52,7 +54,10 @@ const SalesRefDetail = () => {
           }}
         />
       </Container>
-      <AssignedCompanyContainer companies={salesRef?.companies} />
+      <AssignedCompanyContainer
+        companies={salesRef?.companies}
+        salesRef={salesRef}
+      />
     </div>
   );
 };
