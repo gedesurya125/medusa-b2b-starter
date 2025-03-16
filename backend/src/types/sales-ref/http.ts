@@ -1,5 +1,6 @@
 import { FindParams, PaginatedResponse } from "@medusajs/framework/types";
 import { ModuleSalesRef } from "./module";
+import { CompanyDTO } from "src/modules/company/types/common";
 
 export interface SalesRefFilterParams extends FindParams {}
 
@@ -9,6 +10,12 @@ export type SalesRefsResponse = PaginatedResponse<{
 
 export type SalesRefResponse = {
   salesRef: ModuleSalesRef;
+};
+
+export type SalesRefResponseWithLinkedCompanies = {
+  salesRef: ModuleSalesRef & {
+    companies: CompanyDTO[];
+  };
 };
 
 export type AdminCreateSalesRef = {

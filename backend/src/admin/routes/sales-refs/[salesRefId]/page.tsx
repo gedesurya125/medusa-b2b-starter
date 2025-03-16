@@ -6,6 +6,7 @@ import {
 } from "../../../../admin/hooks/api/salesRefs";
 import { Text, toast, useToggleState } from "@medusajs/ui";
 import { DeletePrompt } from "../components/table/delete-prompt";
+import { AssignedCompanyContainer } from "./components";
 
 const SalesRefDetail = () => {
   const { salesRefId } = useParams();
@@ -17,6 +18,8 @@ const SalesRefDetail = () => {
     useToggleState();
 
   const { salesRef } = useSalesRef(salesRefId || "");
+
+  console.log("this is the fetched sales ref", salesRef);
 
   return (
     <div className="flex flex-col gap-y-3">
@@ -49,7 +52,7 @@ const SalesRefDetail = () => {
           }}
         />
       </Container>
-      <Container title={`Assigned Companies`}></Container>
+      <AssignedCompanyContainer companies={salesRef?.companies} />
     </div>
   );
 };
@@ -58,7 +61,7 @@ export default SalesRefDetail;
 
 const ListItem = ({ label, value }: { label: string; value: string }) => {
   return (
-    <li className="text-ui-fg-subtle grid grid-cols-2 items-start px-6 py-4 [&:not(:first-of-type)]:border-t-2">
+    <li className="text-ui-fg-subtle grid grid-cols-2 items-start px-6 py-4 [&:not(:first-of-type)]:border-t-[1px]">
       <Text className="font-medium font-sans txt-compact-small">{label}</Text>
       <Text className="text-sm text-pretty">{value}</Text>
     </li>

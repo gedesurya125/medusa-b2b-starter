@@ -5,6 +5,7 @@ import {
   SalesRefFilterParams,
   SalesRefResponse,
   AdminCreateSalesRef,
+  SalesRefResponseWithLinkedCompanies,
 } from "../../../types/sales-ref";
 import {
   QueryKey,
@@ -49,9 +50,9 @@ export const useSalesRef = (
   id: string,
   query?: SalesRefFilterParams,
   options?: UseQueryOptions<
-    SalesRefResponse,
+    SalesRefResponseWithLinkedCompanies,
     FetchError,
-    SalesRefResponse,
+    SalesRefResponseWithLinkedCompanies,
     QueryKey
   >
 ) => {
@@ -60,10 +61,13 @@ export const useSalesRef = (
     query?: SalesRefFilterParams,
     headers?: ClientHeaders
   ) => {
-    return sdk.client.fetch<SalesRefResponse>(`/admin/sales-ref/${id}`, {
-      query,
-      headers,
-    });
+    return sdk.client.fetch<SalesRefResponseWithLinkedCompanies>(
+      `/admin/sales-ref/${id}?fields=+companies.*`,
+      {
+        query,
+        headers,
+      }
+    );
   };
 
   const { data, ...rest } = useQuery({
