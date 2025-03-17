@@ -7,6 +7,7 @@ import {
 import {
   AdminAddCompanyToSalesRef,
   AdminCreateSalesRefParams,
+  AdminRemoveCompanyFromSalesRef,
 } from "./validator";
 import { createFindParams } from "@medusajs/medusa/api/utils/validators";
 import z from "zod";
@@ -48,5 +49,10 @@ export const salesRefMiddlewares: (MiddlewareRoute & {
     matcher: "/admin/sales-ref/:id/companies",
     method: ["POST"],
     middlewares: [validateAndTransformBody(AdminAddCompanyToSalesRef)],
+  },
+  {
+    matcher: "/admin/sales-ref/:id/companies",
+    method: "DELETE",
+    middlewares: [validateAndTransformBody(AdminRemoveCompanyFromSalesRef)],
   },
 ];

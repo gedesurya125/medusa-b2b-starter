@@ -42,3 +42,11 @@ export const AdminAddCompanyToSalesRef = z.object({
 export type AdminAddCompanyToSalesRefType = z.infer<
   typeof AdminAddCompanyToSalesRef
 >;
+
+export const AdminRemoveCompanyFromSalesRef = z.object({
+  company_id: z.string(),
+});
+
+export type AdminRemoveCompanyFromSalesRefType = z.infer<
+  typeof AdminRemoveCompanyFromSalesRef
+>;
