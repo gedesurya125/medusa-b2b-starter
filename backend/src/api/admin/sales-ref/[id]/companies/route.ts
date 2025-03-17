@@ -4,7 +4,7 @@ import {
 } from "@medusajs/framework";
 import { AdminAddCompanyToSalesRefType } from "../../validator";
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
-import { addCompanyToSalesRefWorkflow } from "src/workflows/sales-ref/workflows/add-companies-to-sales-ref";
+import { addCompanyToSalesRefWorkflow } from "src/workflows/sales-ref/workflows/add-company-to-sales-ref";
 
 export const POST = async (
   req: AuthenticatedMedusaRequest<AdminAddCompanyToSalesRefType>,
