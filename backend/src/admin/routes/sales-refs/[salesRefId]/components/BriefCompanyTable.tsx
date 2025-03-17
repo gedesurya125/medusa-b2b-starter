@@ -1,5 +1,5 @@
 import { Button, Table } from "@medusajs/ui";
-import { CompanyDTO } from "src/modules/company/types/common";
+import { Trash, Plus } from "@medusajs/icons";
 
 export type RequiredCompanyFieldsOnBriefTable = {
   id: string;
@@ -14,11 +14,13 @@ export type RequiredCompanyFieldsOnBriefTable = {
 export interface BriefCompanyTableProps {
   companies?: RequiredCompanyFieldsOnBriefTable[];
   onClickRowAddButton?: (company: RequiredCompanyFieldsOnBriefTable) => void;
+  onClickRowDeleteButton?: (company: RequiredCompanyFieldsOnBriefTable) => void;
 }
 
 export const BriefCompanyTable = ({
   companies,
   onClickRowAddButton,
+  onClickRowDeleteButton,
 }: BriefCompanyTableProps) => {
   return (
     <Table>
@@ -41,7 +43,6 @@ export const BriefCompanyTable = ({
               key={company.id}
               className="[&_td:last-child]:w-[1%] [&_td:last-child]:whitespace-nowrap"
             >
-              {/* <Table.Cell>{company.id}</Table.Cell> */}
               <Table.Cell>
                 <CompanyLogo src={company?.logo_url} alt={""} />
               </Table.Cell>
@@ -50,13 +51,22 @@ export const BriefCompanyTable = ({
               <Table.Cell>{company.email}</Table.Cell>
               <Table.Cell>{company?.customer_group?.name}</Table.Cell>
               <Table.Cell>{company.currency_code?.toUpperCase()}</Table.Cell>
-              {onClickRowAddButton && (
-                <Table.Cell>
+              <Table.Cell>
+                {onClickRowAddButton && (
                   <Button onClick={() => onClickRowAddButton(company)}>
-                    + Add
+                    <Plus />
                   </Button>
-                </Table.Cell>
-              )}
+                )}
+                {onClickRowDeleteButton && (
+                  <Button
+                    onClick={() => onClickRowDeleteButton(company)}
+                    className="ml-2"
+                    variant="danger"
+                  >
+                    <Trash />
+                  </Button>
+                )}
+              </Table.Cell>
             </Table.Row>
           );
         })}

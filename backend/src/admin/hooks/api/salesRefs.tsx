@@ -6,6 +6,7 @@ import {
   SalesRefResponse,
   AdminCreateSalesRef,
   SalesRefResponseWithLinkedCompanies,
+  SalesRefWithLinkedCompanies,
 } from "../../../types/sales-ref";
 import {
   QueryKey,
@@ -140,13 +141,7 @@ export const useAddCompanyToSalesRef = (
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      salesRefId,
-      companyId,
-    }: {
-      salesRefId: string;
-      companyId: string;
-    }) =>
+    mutationFn: ({ salesRefId, companyId }: AddCompanyToSalesRefParams) =>
       sdk.client.fetch(`/admin/sales-ref/${salesRefId}/companies`, {
         method: "POST",
         body: {
@@ -166,8 +161,46 @@ export const useAddCompanyToSalesRef = (
       queryClient.invalidateQueries({
         queryKey: salesRefQueryKey.detail(variables.salesRefId),
       });
+    },
+    ...options,
+  });
+};
 
-      options?.onSuccess?.(data, variables, context);
+type DeleteCompanyFromSalesRefParams = {
+  salesRefId: string;
+  companyId: string;
+};
+
+export const useDeleteCompanyFromSalesRef = (
+  options?: UseMutationOptions<
+    unknown,
+    FetchError,
+    DeleteCompanyFromSalesRefParams
+  >
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ salesRefId, companyId }: DeleteCompanyFromSalesRefParams) =>
+      sdk.client.fetch<SalesRefResponseWithLinkedCompanies>(
+        `/admin/sales-ref/${salesRefId}/companies`,
+        {
+          method: "DELETE",
+          body: {
+            company_id: companyId,
+          },
+        }
+      ),
+    onSuccess: (
+      data: SalesRefResponseWithLinkedCompanies,
+      variables: DeleteCompanyFromSalesRefParams,
+      context: unknown
+    ) => {
+      queryClient.invalidateQueries({
+        queryKey: salesRefQueryKey.list(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: salesRefQueryKey.detail(variables.salesRefId),
+      });
     },
     ...options,
   });
